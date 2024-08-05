@@ -1,16 +1,15 @@
 import mongoose from 'mongoose';
 
-const User = Person.discriminator('User',
-    new Schema({
-        isBlocked: Boolean,
-        panels: [{ type: Schema.Types.ObjectId, ref: 'Panel' }],
-        batteries: [{ type: Schema.Types.ObjectId, ref: 'Battery' }],
-        currentConsumption: Number,
-        historyOfConsumption: [{ type: Schema.Types.ObjectId, ref: 'ConsumptionHistoryData' }],
-        historyOfProduction: [{ type: Schema.Types.ObjectId, ref: 'ProductionHistoryData' }]
-    })
-);
+const UserSchema = new mongoose.Schema({
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    userType: { type: String, required: true, enum: ['admin', 'user'] },
+    isBlocked: { type: Boolean, default: false }
+});
 
+/* 
 User.schema.methods.logIn = async function(email, password) {
     console.log('Logging in from User class');
     // Custom logic for User logIn
@@ -44,7 +43,7 @@ User.schema.methods.calculateCurrentConsumption = function() {
 
 User.schema.methods.saveConsumptionData = function(data) {
     // Save consumption data logic
-};
+}; */
 
-
-module.exports = User;
+const UserModel = mongoose.model('users', UserSchema);
+export default UserModel;
