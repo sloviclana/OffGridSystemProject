@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes.js';
+//import weatherRoutes from './routes/weatherRoutes.js';
 
 const app = express()
 
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 app.use('/auth', authRoutes);
+//app.use('/weather', weatherRoutes);
 
 async function connect() {
     try {

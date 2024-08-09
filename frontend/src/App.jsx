@@ -1,14 +1,18 @@
 import React, {useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './Components/HomePage';
+import Header from './Components/Header';
 import LogIn from './Components/LogIn';
 import Register from './Components/Register';
-import Header from './Components/Header';
+import Weather from './Components/Weather';
+import { useNavigate } from 'react-router-dom';
+
+
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
   const [userType, setUserType] = useState('');
   const [isUserInfoGot, setIsUserInfoGot] = useState(false);  //da li smo dobili podatke o korisniku
-
 
   useEffect(() => {
     const getAuth = () => {
@@ -32,7 +36,7 @@ function App() {
     sessionStorage.removeItem('token');
     setIsAuth(false);
     setUserType('');
-    setIsUserInfoGot(false);  
+    setIsUserInfoGot(false); 
   }
 
   return (
@@ -40,8 +44,10 @@ function App() {
         <BrowserRouter>
         <Header isAuth={isAuth} userType = {userType} handleLogout={handleLogout}/>
             <Routes>
+                <Route path='/' element={<HomePage></HomePage>}></Route>
                 <Route path='/login' element={<LogIn handleUserInfo={handleUserInfo}/>}></Route>
                 <Route path='/register' element={<Register handleUserInfo={handleUserInfo}/>}></Route>
+                <Route path='/locationPicker' element={<Weather></Weather>}></Route>
             </Routes>
         </BrowserRouter>
     </div>   

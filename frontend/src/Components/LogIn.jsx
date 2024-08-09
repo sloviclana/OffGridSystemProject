@@ -11,23 +11,12 @@ const LogIn = ({ handleUserInfo }) => {
     password: ''
   });
 
-  const navigate = useNavigate();
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
-
-  const redirectTo = (userType) => {
-    if(userType === 'admin'){
-        navigate('/adminDashboard');
-    }
-    else if(userType === 'user'){
-        navigate('/userDashboard');
-    }
-  }
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +41,6 @@ const LogIn = ({ handleUserInfo }) => {
         sessionStorage.setItem('token', token);
         handleUserInfo(true);
         alert("Successfull login!");
-        redirectTo(data.type);
       } 
       else
       {
