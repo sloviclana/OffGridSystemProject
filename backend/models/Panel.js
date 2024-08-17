@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const PanelSchema = new Schema ({
+const PanelSchema = new mongoose.Schema ({
     owner: {
         type: Schema.Types.ObjectId,
         ref: 'UserModel',
@@ -20,7 +20,7 @@ const PanelSchema = new Schema ({
         }
     },
 
-    nominalPower: {
+    installedPower: {
         type: Number,
         required: true
     },
@@ -38,5 +38,8 @@ const PanelSchema = new Schema ({
 
 PanelSchema.index({location: '2dsphere'});
 
-const PanelModel = mongoose.Model('panels', PanelSchema);
+//const PanelModel = mongoose.Model('panels', PanelSchema);
+//export default PanelModel;
+
+const PanelModel = mongoose.model('panels', PanelSchema);
 export default PanelModel;

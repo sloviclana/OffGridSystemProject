@@ -8,7 +8,7 @@ const Map = ({ onLocationSelect }) => {
   });
 
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 }); // Inicijalni centar mape
+  const [mapCenter, setMapCenter] = useState({ lat: 45.2671, lng: 19.8335 }); // Inicijalni centar mape
 
   const handleMapClick = (event) => {
     const { latLng } = event;

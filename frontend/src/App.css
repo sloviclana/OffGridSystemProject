@@ -7,44 +7,125 @@
   pointer-events: none;
 }
 
+.dashboardDiv {
+  border: 5cap;
+  background-color: #52b471;
+  border-radius: 5ch;
+  background-size: auto;
+  text-align: center;
+  display:block;
+  justify-content: center;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0; /* Ovo možeš dodati ako želiš da skineš i padding */
+  margin: 0; /* Skidanje margine, ako je potrebno */
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
+/*transitions between pages*/
+/* Animacije za tranziciju */
+.slide-enter {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.slide-enter-active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 300ms ease-in, opacity 300ms ease-in;
+}
+
+.slide-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-exit-active {
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 300ms ease-in, opacity 300ms ease-in;
+}
+
+/* ------------- */
+
 body {
-  background-image: url('../public/backgroundPhoto.jpg');
+  background-image: url('../public/backgroundPhoto.png');
   background-size: cover; /* Pokriva celu pozadinu */
   background-position: center; /* Pozicionira sliku u centar */
   background-repeat: no-repeat; /* Sprečava ponavljanje slike */
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.centralDiv {
-  text-align: center;
-  background-size: cover;
-  background-position: center;
-  min-height: 95vh; /* Bez navodnika */
+
+
+.headerDiv {
+  height: '60px';
+  width: '100%';
+  text-align: 'center';
+  background-color:#030000;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end; /* Postavlja sadržaj na donji deo stranice */
   align-items: center;
+}
+
+.centralDiv {
+  text-align: center;
+  background-image: url('../public/backgroundPhoto.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0;
+  height: 95vh; /* Bez navodnika */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Postavlja sadržaj na donji deo stranice */
+  align-items: flex-end; /* Postavlja sadržaj na desnu stranu */
+}
+
+.homepageContent {
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Postavlja sadržaj na donji deo stranice */
+  align-items: flex-end; /* Postavlja sadržaj na desnu stranu */
+  min-height: 100vh; 
+  max-height: 400vh;/* Osigurava da element zauzima celu visinu prozora */
+  padding-right: 200px;
+  padding-bottom: 300px;/* Dodaje malo prostora između sadržaja i dna stranice */
+  font-size: larger;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 300;
 }
 
 .centralComponentDiv {
   background-color: aliceblue;
-  position: relative;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Postavlja sadržaj na donji deo stranice */
+  align-items: center; /* Postavlja sadržaj na desnu stranu */
+  margin-bottom: 100px;
+  margin-right: 100px;
+  margin-top: 200px;
+  font-size: larger;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 200;
   width: 400px;
-  z-index: 1;
-  padding: 20px; /* Bez navodnika */
-  border: 2px solid white;
+  border: 2px;
   border-radius: 10px;
 }
 
 .primaryBtn {
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #3A6D9E;
+  background-color: #098e35;
   text-transform: none; /* Tekst ostaje kakav jeste */
   margin: 0.5rem; /* Dodata margina za stilizaciju */
   border-radius:7px;
@@ -56,13 +137,13 @@ body {
 }
 
 .primaryBtn:hover {
-  background-color: #171b69; /* Boja prilikom hovera */
+  background-color: #055d22; /* Boja prilikom hovera */
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Senka iza dugmeta pri hoveru */
 }
 
 .secondaryBtn {
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #337bbd;
+  background-color: #0ddf68;
   text-transform: none; /* Tekst ostaje kakav jeste */
   margin: 0.5rem; /* Dodata margina za stilizaciju */
   border-radius:7px;
@@ -75,7 +156,7 @@ body {
 
 
 .App-header {
-  background-color: #282c34;
+  background-color: #030000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

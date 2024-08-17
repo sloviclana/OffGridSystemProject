@@ -3,7 +3,7 @@ import React from 'react';
 const HomePage = () => {
 
     return (
-        <div className='centralDiv'>
+        <div className="centralDiv">
             <div className='centralComponentDiv'>
                 <h2>Welcome to the home page!</h2>
 

@@ -11,6 +11,17 @@ const LogIn = ({ handleUserInfo }) => {
     password: ''
   });
 
+  const navigate = useNavigate();
+
+  const redirectTo = (userType) => {
+    if(userType === 'admin'){
+        navigate('/adminDashboard');
+    }
+    else if(userType === 'user'){
+        navigate('/userDashboard');
+    }
+  }
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -41,6 +52,7 @@ const LogIn = ({ handleUserInfo }) => {
         sessionStorage.setItem('token', token);
         handleUserInfo(true);
         alert("Successfull login!");
+        redirectTo(data.type);
       } 
       else
       {

@@ -10,20 +10,14 @@ const Header = ({ isAuth, userType, handleLogout }) => {
     const goToRegistration = () => {
       nav('register');
     };
+
+    const handleLogoutClick = () => {
+      handleLogout();  // Poziv originalne logout funkcije
+      nav('/');  // Preusmeravanje na HomePage nakon odjave
+    };
   
     return (
-      <div
-      className="primaryDiv"
-      style={{
-        height: '60px',
-        width: '100%',
-        textAlign: 'center',
-        backgroundColor: '#3A667A',
-        display: 'flex',
-        justifyContent: 'center', // Horizontalno centriranje
-        alignItems: 'center', // Vertikalno centriranje
-      }}
-      >
+      <div className="headerDiv">
         <ButtonGroup spacing="0.5rem" aria-label="spacing button group" sx={{ marginTop: 1, marginBottom: 1}}>
           {!isAuth && (
             <HeaderButton
@@ -77,8 +71,8 @@ const Header = ({ isAuth, userType, handleLogout }) => {
             <HeaderButton
               sx={{ marginTop: 0.3, marginBottom: 1, marginLeft: 2}}
               variant="contained"
-              onClick={handleLogout}
-              href="/home"
+              onClick={handleLogoutClick}
+              //href="/home"
             >
               Logout
             </HeaderButton>

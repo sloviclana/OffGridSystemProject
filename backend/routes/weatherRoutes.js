@@ -1,8 +1,8 @@
-/* import express from 'express';
-import getWeatherInformation from '../controllers/mapController.js';
+import express from 'express';
+import mapController from '../controllers/mapController.js';
 
 const router = express.Router();
 
-router.get('/weather', getWeatherInformation);
+router.post('/setPanelOnLocation', mapController.setPanelOnLocation);
 
-export default router; */
+export default router; 

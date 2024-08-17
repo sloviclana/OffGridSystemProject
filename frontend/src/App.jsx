@@ -1,11 +1,14 @@
 import React, {useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import HomePage from './Components/HomePage';
 import Header from './Components/Header';
 import LogIn from './Components/LogIn';
 import Register from './Components/Register';
 import Weather from './Components/Weather';
-import { useNavigate } from 'react-router-dom';
+import UserDashboard from './Components/UserDashboard';
+import AdminDashboard from './Components/AdminDashboard';
+//import { useNavigate } from 'react-router-dom';
 
 
 
@@ -14,6 +17,8 @@ function App() {
   const [userType, setUserType] = useState('');
   const [isUserInfoGot, setIsUserInfoGot] = useState(false);  //da li smo dobili podatke o korisniku
 
+
+  //const navigate = useNavigate();
   useEffect(() => {
     const getAuth = () => {
         if(sessionStorage.getItem('user') !== null && sessionStorage.getItem('isAuth') !== null){
@@ -37,18 +42,25 @@ function App() {
     setIsAuth(false);
     setUserType('');
     setIsUserInfoGot(false); 
+    //navigate('/');
   }
 
   return (
     <div className='primaryDiv'>
         <BrowserRouter>
         <Header isAuth={isAuth} userType = {userType} handleLogout={handleLogout}/>
+        <TransitionGroup>
+          <CSSTransition timeout={300} className="slide">
             <Routes>
-                <Route path='/' element={<HomePage></HomePage>}></Route>
-                <Route path='/login' element={<LogIn handleUserInfo={handleUserInfo}/>}></Route>
-                <Route path='/register' element={<Register handleUserInfo={handleUserInfo}/>}></Route>
-                <Route path='/locationPicker' element={<Weather></Weather>}></Route>
+                  <Route path='/' element={<HomePage></HomePage>}></Route>
+                  <Route path='/login' element={<LogIn handleUserInfo={handleUserInfo}/>}></Route>
+                  <Route path='/register' element={<Register handleUserInfo={handleUserInfo}/>}></Route>
+                  <Route path='/locationPicker' element={<Weather></Weather>}></Route>
+                  <Route path='/adminDashboard' element={<AdminDashboard></AdminDashboard>}></Route>
+                  <Route path='/userDashboard' element={<UserDashboard></UserDashboard>}></Route>
             </Routes>
+          </CSSTransition>
+        </TransitionGroup>
         </BrowserRouter>
     </div>   
   );
