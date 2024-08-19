@@ -27,14 +27,14 @@ const Register = ({handleUserInfo}) => {
     });
   };
 
-  const redirectTo = (userType) => {
+  /* const redirectTo = (userType) => {
     if(userType === 'admin'){
         navigate('/adminDashboard');
     }
     else if(userType === 'user'){
         navigate('/userDashboard');
     }
-  };
+  }; */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +58,7 @@ const Register = ({handleUserInfo}) => {
         sessionStorage.setItem('token', token);
         handleUserInfo(true);
         alert("Successfull registration!");
-        redirectTo(formData.userType);
+        navigate('/login');
       }
       else
       {

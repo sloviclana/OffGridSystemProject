@@ -17,6 +17,25 @@
   justify-content: center;
 }
 
+.columncontainer {
+  display: flex;
+  justify-content: space-between; /* Or use `justify-content: center;` */
+  gap: 20px; /* Space between the two columns */
+}
+
+.list-column {
+  flex: 1; /* Optional: this will make both columns take equal space */
+}
+
+ul {
+  list-style-type: none; /* Removes the default bullet points */
+  padding: 0;
+}
+
+li {
+  margin: 10px 0; /* Adds some space between the items */
+}
+
 ul {
   list-style-type: none;
   padding: 0; /* Ovo možeš dodati ako želiš da skineš i padding */

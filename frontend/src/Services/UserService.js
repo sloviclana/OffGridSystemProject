@@ -44,3 +44,98 @@ export const register = async (formData, token) => {
 
 };
 
+export const getAllUsers = async(id, token) => {
+
+    try {
+        const response = await axios.post(`${url}/users/getAllUsers?id=${id}`,
+        { 
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    }
+    catch(error) {
+        console.error(error);
+        throw new Error('Getting all users failed! Try again.');
+    }
+};
+
+export const blockUser = async(id, token) => {
+    try {
+        const response = await axios.post(`${url}/users/blockUser?id=${id}`,
+        { 
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    }
+    catch(error) {
+        console.error(error);
+        throw new Error('Blocking this user failed! Try again.');
+    }
+}
+
+export const unblockUser = async(id, token) => {
+    try {
+        const response = await axios.post(`${url}/users/unblockUser?id=${id}`,
+        { 
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    }
+    catch(error) {
+        console.error(error);
+        throw new Error('Unblocking this user failed! Try again.');
+    }
+}
+
+export const getLastConstParameters = async(token) => {
+    try {
+        const response = await axios.get(`${url}/users/getLastConstParameters`,
+            { 
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+    
+            return response.data;
+    } 
+    catch (error) {
+        console.error(error);
+        throw new Error('Getting constant parameters failed! Try again.')
+    }
+}
+
+export const setNewConstantParameters = async(formData, userId, token) => {
+    try {
+        const dataToSend = {
+            userId: userId,
+            ...formData
+        };
+        const response = await axios.post(`${url}/users/setNewConstParameters`, JSON.stringify(dataToSend),
+            { 
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+    
+            return response.data;
+    }
+    catch(error) {
+        console.error(error);
+        throw new Error('Setting constant parameters failed! Try again.');
+    }
+} 
+

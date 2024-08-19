@@ -57,6 +57,16 @@ const Header = ({ isAuth, userType, handleLogout }) => {
             </HeaderButton>
           )}
 
+          {isAuth && userType === 'admin' && (
+            <HeaderButton
+              sx={{ marginTop: 0.3, marginBottom: 1, marginLeft: 2}}
+              variant="contained"
+              onClick={() => nav('setConstParameters')}
+            >
+              Set constant parameters
+            </HeaderButton>
+          )}
+
           {isAuth && userType === 'user' && (
             <HeaderButton
               sx={{ marginTop: 0.3, marginBottom: 1, marginLeft: 2}}

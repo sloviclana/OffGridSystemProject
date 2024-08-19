@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes.js';
 import weatherRoutes from './routes/weatherRoutes.js';
 import panelRoutes from './routes/panelRoutes.js';
+import usersRoutes from './routes/usersRoutes.js';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/weather', weatherRoutes);
 app.use('/panels', panelRoutes);
+app.use('/users', usersRoutes);
 
 async function connect() {
     try {

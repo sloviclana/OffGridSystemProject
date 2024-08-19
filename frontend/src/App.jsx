@@ -8,7 +8,7 @@ import Register from './Components/Register';
 import Weather from './Components/Weather';
 import UserDashboard from './Components/UserDashboard';
 import AdminDashboard from './Components/AdminDashboard';
-//import { useNavigate } from 'react-router-dom';
+import SetConstantParameters from './Components/SetConstantParameters';
 
 
 
@@ -58,6 +58,7 @@ function App() {
                   <Route path='/locationPicker' element={<Weather></Weather>}></Route>
                   <Route path='/adminDashboard' element={<AdminDashboard></AdminDashboard>}></Route>
                   <Route path='/userDashboard' element={<UserDashboard></UserDashboard>}></Route>
+                  <Route path='/setConstParameters' element={<SetConstantParameters></SetConstantParameters>}></Route>
             </Routes>
           </CSSTransition>
         </TransitionGroup>

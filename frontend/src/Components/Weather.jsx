@@ -57,7 +57,7 @@ const Weather = () => {
       <h1>Location picker for your new panel</h1>
       <Map onLocationSelect={handleLocationSelect} />
       {weatherData && (
-        <div className='centralDiv'>
+        <div className='dashboardDiv'>
             <div className='centralComponentDiv'>
           <h2>Weather Information</h2>
           <p><strong>Location:</strong> {weatherData.name}</p>
