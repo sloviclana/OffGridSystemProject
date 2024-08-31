@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import {getLastConstParameters, setNewConstantParameters} from '../Services/UserService.js';
 
 const SetConstantParameters = () => {
@@ -47,9 +47,9 @@ const SetConstantParameters = () => {
 
     
 
-  const[error, setError] = useState(false);
+  //const[error, setError] = useState(false);
 
-  const navigate = useNavigate()
+  //const navigate = useNavigate()
 
   const handleChange = (e) => {
     setFormData({

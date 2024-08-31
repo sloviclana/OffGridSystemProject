@@ -72,8 +72,6 @@ ul {
   transition: transform 300ms ease-in, opacity 300ms ease-in;
 }
 
-/* ------------- */
-
 body {
   background-image: url('../public/backgroundPhoto.png');
   background-size: cover; /* Pokriva celu pozadinu */
@@ -82,7 +80,26 @@ body {
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.centralDiv {
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  min-height: 95vh; /* Bez navodnika */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
+.centralComponentDiv {
+  background-color: aliceblue;
+  position: relative;
+  width: 400px;
+  z-index: 1;
+  padding: 20px; /* Bez navodnika */
+  border: 2px solid white;
+  border-radius: 10px;
+}
 
 .headerDiv {
   height: '60px';
@@ -95,18 +112,78 @@ body {
   align-items: center;
 }
 
-.centralDiv {
+.mapContainerDiv {
+  display: flex;
+  width: 100%;
+}
+
+
+.mapDiv {
+  flex: 65%;
+  min-height: 95vh;
   text-align: center;
-  background-image: url('../public/backgroundPhoto.png');
-  background-position: center;
-  background-repeat: no-repeat;
   background-size: cover;
-  margin: 0;
-  height: 95vh; /* Bez navodnika */
+  background-position: left;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Postavlja sadržaj na donji deo stranice */
-  align-items: flex-end; /* Postavlja sadržaj na desnu stranu */
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-left: 30px;
+  padding-right: 10px;
+}
+
+.locationDiv {
+  flex: 35%;
+  min-height: 95vh;
+  text-align: center;
+  background-size: cover;
+  background-position: top;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-right: 50px;
+}
+
+.warningParagraph {
+  color: rgb(177, 14, 14);
+  font-weight: bold;
+}
+
+.titleContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Visina diva */
+}
+
+.title1 {
+  text-align: center;
+}
+
+.locationComponentDiv {
+  background-color: aliceblue;
+  background-position: right;
+  justify-content: flex;
+  position:relative;
+  width: 400px;
+  z-index: 1;
+  padding: 20px; /* Bez navodnika */
+  border: 2px solid white;
+  border-radius: 10px;
+}
+
+.myChartDiv {
+  background-color: aliceblue;
+  background-position: right;
+  justify-content: flex;
+  position:relative;
+  width: 1000px;
+  height: 800px;
+  z-index: 1;
+  padding: 20px; /* Bez navodnika */
+  border: 2px solid white;
+  border-radius: 10px;
 }
 
 .homepageContent {
@@ -122,24 +199,6 @@ body {
   font-size: larger;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   font-weight: 300;
-}
-
-.centralComponentDiv {
-  background-color: aliceblue;
-  background-position: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Postavlja sadržaj na donji deo stranice */
-  align-items: center; /* Postavlja sadržaj na desnu stranu */
-  margin-bottom: 100px;
-  margin-right: 100px;
-  margin-top: 200px;
-  font-size: larger;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
-  font-weight: 200;
-  width: 400px;
-  border: 2px;
-  border-radius: 10px;
 }
 
 .primaryBtn {

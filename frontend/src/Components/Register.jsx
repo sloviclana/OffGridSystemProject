@@ -27,15 +27,6 @@ const Register = ({handleUserInfo}) => {
     });
   };
 
-  /* const redirectTo = (userType) => {
-    if(userType === 'admin'){
-        navigate('/adminDashboard');
-    }
-    else if(userType === 'user'){
-        navigate('/userDashboard');
-    }
-  }; */
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

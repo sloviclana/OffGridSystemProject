@@ -72,7 +72,6 @@ const AdminDashboard = () => {
         const blockedUser = await blockUser(id, tokenFromStorage);
         console.log(blockedUser);
         await handleShowUsers();
-        //window.location.reload();
     };
 
     const handleRemovePanel = async(panelSystemId) => {
@@ -85,7 +84,6 @@ const AdminDashboard = () => {
         const unblockedUser = await unblockUser(id, tokenFromStorage);
         console.log(unblockedUser);
         await handleShowUsers();
-        //window.location.reload();
     }
 
     return (

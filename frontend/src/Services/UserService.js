@@ -1,5 +1,5 @@
 import axios from "axios";
-import UserModel from "../Models/UserModel.js";
+//import UserModel from "../Models/UserModel.js";
 
 const url = "http://localhost:5000";
 

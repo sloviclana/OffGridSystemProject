@@ -9,6 +9,8 @@ import Weather from './Components/Weather';
 import UserDashboard from './Components/UserDashboard';
 import AdminDashboard from './Components/AdminDashboard';
 import SetConstantParameters from './Components/SetConstantParameters';
+import MyChart from './Components/MyChart';
+import PanelSystemOverview from './Components/PanelSystemOverview';
 
 
 
@@ -59,6 +61,8 @@ function App() {
                   <Route path='/adminDashboard' element={<AdminDashboard></AdminDashboard>}></Route>
                   <Route path='/userDashboard' element={<UserDashboard></UserDashboard>}></Route>
                   <Route path='/setConstParameters' element={<SetConstantParameters></SetConstantParameters>}></Route>
+                  <Route path='/myChart' element={<MyChart></MyChart>}></Route>
+                  <Route path='/panelSystemOverview' element={<PanelSystemOverview></PanelSystemOverview>}></Route>
             </Routes>
           </CSSTransition>
         </TransitionGroup>

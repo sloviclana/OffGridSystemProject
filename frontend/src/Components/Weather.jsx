@@ -8,6 +8,14 @@ const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [cloudiness, setCloudiness] = useState(null);
   const [location, setLocation] = useState(null);
+  const [installedPower, setInstalledPower] = useState(null);
+  const [formData, setFormData] = useState({
+    installedPower: 0,
+    capacity: 0,
+    power: 0,
+    chargingDuration: 0, 
+    dischargingDuration: 0
+  });
   const navigate = useNavigate();
 
   const handleLocationSelect = async (location) => {
@@ -16,6 +24,13 @@ const Weather = () => {
     setWeatherData(data);
     setCloudiness(data.clouds.all);
   };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  }
 
   const handleSubmit = async(e) => {
     
@@ -37,7 +52,12 @@ const Weather = () => {
         sunrise: weatherData.sys.sunrise,
         sunset: weatherData.sys.sunset,
         rain: weatherData.rain ? weatherData.rain['1h'] : 0,
-        user: user.email
+        user: user.email,
+        installedPower: formData.installedPower,
+        capacity: formData.capacity,
+        power: formData.power,
+        chargingDuration: formData.capacity / formData.power,
+        dischargingDuration: formData.capacity / formData.power
       };
 
       try {
@@ -53,12 +73,17 @@ const Weather = () => {
   };
 
   return (
+
     <div>
-      <h1>Location picker for your new panel</h1>
+      <div>
+        <h1 className='title1'>Location picker for your new panel</h1>
+      </div>
+      <div className='mapContainerDiv'>
+      
       <Map onLocationSelect={handleLocationSelect} />
       {weatherData && (
-        <div className='dashboardDiv'>
-            <div className='centralComponentDiv'>
+        <div className='locationDiv'>
+            <div className='locationComponentDiv'>
           <h2>Weather Information</h2>
           <p><strong>Location:</strong> {weatherData.name}</p>
           <p><strong>Latitude: </strong> {location.lat} </p>
@@ -70,14 +95,46 @@ const Weather = () => {
           <p><strong>Sunset:</strong> {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString()}</p>
           <p><strong>Rain:</strong> {weatherData.rain ? weatherData.rain['1h'] : '0 mm'}</p>
           <br></br>
-          <p><strong>Is this the correct location where you want to place the panel? If not, pick another location on the map.</strong></p>
+          <p className='warningParagraph'>Is this the correct location where you want to place the panel? If not, pick another location on the map. If it is, please enter installed power for the panel, and battery info:</p>
           <form onSubmit={handleSubmit}>
+            <label>Installed power of the panel (kW) </label>
+            <input 
+            type='number'
+            id="installedPower" 
+            name="installedPower" 
+            value={formData.installedPower} 
+            onChange={handleChange} 
+            required
+            ></input>
+
+            <h3>Battery info: </h3>
+            <label>Capacity:</label>
+            <input 
+            type='number'
+            id="capacity" 
+            name="capacity" 
+            value={formData.capacity} 
+            onChange={handleChange} 
+            required
+            ></input> <br></br>
+
+            <label htmlFor="power">Power: </label>
+            <input type='number'
+            id="power" 
+            name="power" 
+            value={formData.power} 
+            onChange={handleChange} 
+            required
+            ></input> <br></br>
+
           <button type='submit' className='primaryBtn'>Place the panel and battery here</button>
             </form>
           </div>
         </div>
       )}
     </div>
+    </div>
+    
   );
 };
 

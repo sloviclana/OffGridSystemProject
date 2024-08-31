@@ -52,3 +52,62 @@ export const removePanelAndBatterySystem = async (systemId, token) => {
     throw error;
   }
 };
+
+export const getConsumptionDataHistory = async(token) => {
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/panels/getConsumptionDataHistory`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+          }
+      }
+      );
+
+      return response.data;
+  }
+  catch (error) {
+    console.error("Couldn't get consumption data!");
+    throw error;
+  }
+
+};
+
+export const getPanelProductionDataHistory = async(id, token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/panels/getPanelProductionDataHistory?systemId=${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+          }
+      }
+      );
+      return response.data;
+  }
+  catch(error) {
+    console.error("Couldn't get panel production data!");
+    throw error;
+  }
+};
+
+export const getBatteryChargeLevelDataHistory = async(id, token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/panels/getBatteryChargeLevelDataHistory?systemId=${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+          }
+      }
+      );
+      return response.data;
+  }
+  catch(error) {
+    console.error("Couldn't get panel production data!");
+    throw error;
+  }
+};
+
+

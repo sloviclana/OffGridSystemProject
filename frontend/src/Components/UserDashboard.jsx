@@ -1,14 +1,13 @@
 import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllPanelsForUser, getAllBatteriesForUser, removePanelAndBatterySystem } from "../Services/PanelBatteryService";
-
+import { getAllPanelsForUser, getAllBatteriesForUser, getBatteryChargeLevelDataHistory, removePanelAndBatterySystem, getConsumptionDataHistory, getPanelProductionDataHistory } from "../Services/PanelBatteryService";
 
 const UserDashboard = () => {
 
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-    const [refreshData, setRefreshData] = useState(false); // Dodajemo state za osvježavanje podataka
+    //const [refreshData, setRefreshData] = useState(false); // Dodajemo state za osvježavanje podataka
     const [panels, setPanels] = useState([]);
     const [batteries, setBatteries] = useState([]);
     const [panelsVisible, setPanelsVisible] = useState(false);
@@ -27,10 +26,45 @@ const UserDashboard = () => {
         }
     }, []);
 
+    const handleShowChart = async(panelSystemId) => {
+        const consumptionData = await getConsumptionDataHistory(tokenFromStorage);
+        const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage);
+        const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage);
+        const data = {
+            labels: panelProductionData.labels,
+            datasets: [
+                {
+                    label: 'Panel production',
+                    data: panelProductionData.productionData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: 'Battery charge level',
+                    data: batteryChargeLevelData.chargeLevelData,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: 'User consumption',
+                    data: (consumptionData.concat(consumptionData)).concat(consumptionData),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                }
+            ]
+        };
+
+        const dataToSend = {data, panelSystemId};
+        navigate('/panelSystemOverview', {state: dataToSend});
+    };
 
     const handleShowPanels = async () => {
-        // Ovde dobavljaš panele, npr. fetchom
-        // Nakon što dobaviš panele, možeš ih postaviti u stanje
         const allPanels = await getAllPanelsForUser(userFromStorage._id, tokenFromStorage);
         setPanels(allPanels);
         setPanelsVisible(true);
@@ -47,8 +81,6 @@ const UserDashboard = () => {
     }
 
     const handleShowBatteries = async () => {
-        // Ovde dobavljaš panele, npr. fetchom
-        // Nakon što dobaviš panele, možeš ih postaviti u stanje
         const allBatteries = await getAllBatteriesForUser(userFromStorage._id, tokenFromStorage);
         setBatteries(allBatteries);
         setBatteriesVisible(true);
@@ -66,57 +98,75 @@ const UserDashboard = () => {
     return (
         <div className="">
             <div className="">
-            {user === null ? (
-                <h2>Welcome to your dashboard!</h2>
+                <div>
+                {user === null ? (
+                <h2 className="title1">Welcome to your dashboard!</h2>
                             ) : (
-                <h2>Welcome to your dashboard, {user.firstName}!</h2>
+                <h2 className="title1">Welcome to your dashboard, {user.firstName}!</h2>
                 )}
+                </div>
+            
 
-            { panelsVisible ? (
-            <>
-                <ul>
-                {panels.map((panel, index) => (
-                    <li key={panel._id}>
-                        <div className="dashboardDiv">
-                            <h3>{panel.systemId}</h3>
-                            <p>Location latitude: {panel.location.coordinates[0]}</p>
-                            <p>Location longitude: {panel.location.coordinates[1]}</p>
-                            <p>Installed power: {panel.installedPower}</p>
-                            <p>Current power: {panel.currentPower}</p>
-                            <button type="submit" onClick={() => handleRemovePanel(panel.systemId)} className="secondaryBtn">Remove this panel system</button>
-                        </div>
-                    </li>
-                ))}
-                </ul>
-                
-                <button type="button" onClick={handleHidePanels} className="primaryBtn">Hide panels</button>
-            </>
+            <div className="dashboardDiv">
+            <h2>Your panels</h2>
+            { panelsVisible ? 
+            ( <>
+                {panels.length === 0 ?
+                (<p>No panels found.</p>) : 
+                (
+                    <>
+                    <ul>
+                    {panels.map((panel, index) => (
+                        <li key={panel._id}>
+                            <div className="dashboardDiv">
+                                <h3>{panel.systemId}</h3>
+                                <p>Location latitude: {panel.location.coordinates[0]}</p>
+                                <p>Location longitude: {panel.location.coordinates[1]}</p>
+                                <p>Installed power: {panel.installedPower}</p>
+                                <p>Current power: {panel.currentPower}</p>
+                                <button type="submit" onClick={() => handleRemovePanel(panel.systemId)} className="secondaryBtn">Remove this panel system</button>
+                                <button type="submit" onClick={() => handleShowChart(panel.systemId)} className="secondaryBtn">Get consumption and production data of this system</button>
+                            </div>
+                        </li>
+                    ))}
+                    </ul>
+                </>
+            )}  
+            <button type="button" onClick={handleHidePanels} className="primaryBtn">Hide panels</button>
+            </>  
                 ) : (
             <>
             <p>Here you can preview all of your panels:</p>
             <button type="submit" onClick={handleShowPanels} className="primaryBtn">Show all my panels</button>
             </>
             )}
+            </div>
 
+            <div className="dashboardDiv">
+            <h2>Your batteries</h2>
             { batteriesVisible ? (
             <>
-                <ul>
-                {batteries.map((battery, index) => (
-                    <li key={battery._id}>
-                        <div className="dashboardDiv">
-                            <h3>{battery.systemId}</h3>
-                            <p>Location latitude: {battery.location.coordinates[0]}</p>
-                            <p>Location longitude: {battery.location.coordinates[1]}</p>
-                            <p>Capacity: {battery.capacity}</p>
-                            <p>Power: {battery.power}</p>
-                            <p>Charge level: {battery.chargeLevel}</p>
-                            <p>Charging duration: {battery.chargingDuration}</p>
-                            <p>Disharging duration: {battery.dischargingDuration}</p>
-                            <p>State: {battery.state}</p>
-                        </div>
-                    </li>
-                ))}
-                </ul>
+                {batteries.length === 0 ? 
+                (<p>No batteries found.</p>) : 
+                (
+                    <ul>
+                    {batteries.map((battery, index) => (
+                        <li key={battery._id}>
+                            <div className="dashboardDiv">
+                                <h3>{battery.systemId}</h3>
+                                <p>Location latitude: {battery.location.coordinates[0]}</p>
+                                <p>Location longitude: {battery.location.coordinates[1]}</p>
+                                <p>Capacity: {battery.capacity}</p>
+                                <p>Power: {battery.power}</p>
+                                <p>Charge level: {battery.chargeLevel}</p>
+                                <p>Charging duration: {battery.chargingDuration}</p>
+                                <p>Disharging duration: {battery.dischargingDuration}</p>
+                                <p>State: {battery.state}</p>
+                            </div>
+                        </li>
+                    ))}
+                    </ul>
+                    )}
                 
                 <button type="button" onClick={handleHideBatteries} className="primaryBtn">Hide batteries</button>
             </>
@@ -126,6 +176,7 @@ const UserDashboard = () => {
             <button type="submit" onClick={handleShowBatteries} className="primaryBtn">Show all my batteries</button>
             </>
             )}
+            </div>
 
             <p>Do you want to add new panel and battery system?</p>
             <button type="submit" className="secondaryBtn" onClick={redirectToLocationPicker}>Pick the location</button>

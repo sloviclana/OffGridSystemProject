@@ -1,10 +1,6 @@
 import mongoose, {Schema} from "mongoose";
 
-const ConsumptionDataSchema = new Schema({
-    systemId: {
-        type: String,
-        required: true
-    }, 
+const ConsumptionDataSchema = new Schema({ 
 
     dailyValue: {
         type: Number,

@@ -1,5 +1,6 @@
 import UserModel from "../models/User.js";
 import bcrypt from 'bcrypt';
+import ConsumptionDataModel from "../models/ConsumptionData.js";
 
 const userAuthController = {
     register : async(req, res) => {
@@ -41,7 +42,7 @@ const userAuthController = {
             return res.json({ message: "User with this email does not exist!" });
         }
         } catch (err) {
-        return res.status(500).json({ message: "Došlo je do greške prilikom pretrage korisnika", error: err });
+        return res.status(500).json({ message: "Error with searching users.", error: err });
         }
     }
 };

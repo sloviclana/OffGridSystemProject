@@ -6,6 +6,8 @@ import authRoutes from './routes/authRoutes.js';
 import weatherRoutes from './routes/weatherRoutes.js';
 import panelRoutes from './routes/panelRoutes.js';
 import usersRoutes from './routes/usersRoutes.js';
+import panelsBatteriesController from './controllers/panelsBatteriesController.js';
+import cron from 'node-cron';
 
 const app = express();
 
@@ -29,7 +31,17 @@ async function connect() {
         await mongoose.connect(uri).then(() => {
             console.log("Connected to MongoDB");
 
-            app.listen(5000, () => {console.log("server started on port 5000") });
+            app.listen(5000, () => {
+                console.log("server started on port 5000") 
+                cron.schedule('0 * * * *', () => {
+                    try {
+                      panelsBatteriesController.updateWeatherDataForAllSystems();
+                      console.log('Running cron job: updateWeatherDataForAllSystems');
+                    } catch (error) {
+                      console.error('Error running cron job:', error);
+                    }
+                });
+            });
         })
         
     } catch (error) {

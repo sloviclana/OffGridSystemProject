@@ -1,6 +1,7 @@
 import BatteryModel from '../models/Battery.js';
 import PanelModel from '../models/Panel.js';
 import UserModel from '../models/User.js';
+import ConsumptionDataModel from '../models/ConsumptionData.js';
 
 const mapController = {
 
@@ -10,6 +11,8 @@ const mapController = {
             const lat = locationData.locationLat;
             const lng = locationData.locationLng;
             const owner = await UserModel.findOne({ email: locationData.user });
+            
+            const installedPwr = locationData.installedPower;
             let count = await PanelModel.countDocuments({});
             count = count+1;
 
@@ -30,7 +33,7 @@ const mapController = {
                     type: 'Point',
                     coordinates: [lat, lng ]
                 },
-                installedPower: 0,
+                installedPower: installedPwr,
                 currentPower: 0,
                 systemId: "PanelSystem" + count
             };
@@ -41,11 +44,11 @@ const mapController = {
                     type: 'Point',
                     coordinates: [lat, lng]
                 },
-                capacity: 0,
-                power: 0,
+                capacity: locationData.capacity,
+                power: locationData.power,
                 chargeLevel: 100,
-                chargingDuration: 60,
-                dischargeDuration: 1200,
+                chargingDuration: locationData.chargingDuration,
+                dischargeDuration: locationData.dischargingDuration,
                 state: 'inaction',
                 systemId: "PanelSystem" + count
             }
@@ -60,7 +63,6 @@ const mapController = {
         
     }
 };
-
 
 
 export default mapController; 

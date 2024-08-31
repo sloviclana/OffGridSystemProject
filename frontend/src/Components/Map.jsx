@@ -20,10 +20,10 @@ const Map = ({ onLocationSelect }) => {
   };
 
   return isLoaded ? (
-    <div className='centralDiv'>
+    <div className='mapDiv'>
     <GoogleMap
       onClick={handleMapClick}
-      mapContainerStyle={{ width: '90%', height: '800px' }}
+      mapContainerStyle={{ width: '100%', height: '800px' }}
       zoom={8}
       center={mapCenter}
     >
