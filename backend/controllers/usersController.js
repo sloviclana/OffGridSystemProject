@@ -10,7 +10,7 @@ const usersController = {
             console.log(req.body);
             const currenUserId = req.query.id;
 
-            const allUsers = await UserModel.find({});
+            const allUsers = await UserModel.find({userType: 'user'});
 
             const filteredUsers = allUsers.filter(user => user._id.toString() !== currenUserId);
             return res.status(201).json(filteredUsers);

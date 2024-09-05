@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllPanelsForUser, getAllBatteriesForUser, getBatteryChargeLevelDataHistory, removePanelAndBatterySystem, getConsumptionDataHistory, getPanelProductionDataHistory } from "../Services/PanelBatteryService";
+import { getAllPanelsForUser, getAllBatteriesForUser, 
+    getBatteryChargeLevelDataHistory, removePanelAndBatterySystem, 
+    getConsumptionDataHistory, getPanelProductionDataHistory, getBatteryBySystemId } from "../Services/PanelBatteryService";
 
 const UserDashboard = () => {
 
@@ -30,6 +32,7 @@ const UserDashboard = () => {
         const consumptionData = await getConsumptionDataHistory(tokenFromStorage);
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage);
         const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage);
+        const battery = await getBatteryBySystemId(panelSystemId);
         const data = {
             labels: panelProductionData.labels,
             datasets: [
@@ -60,7 +63,7 @@ const UserDashboard = () => {
             ]
         };
 
-        const dataToSend = {data, panelSystemId};
+        const dataToSend = {data, panelSystemId, battery};
         navigate('/panelSystemOverview', {state: dataToSend});
     };
 
@@ -96,7 +99,7 @@ const UserDashboard = () => {
       };
 
     return (
-        <div className="">
+        <div className="homePageDiv">
             <div className="">
                 <div>
                 {user === null ? (
@@ -107,7 +110,7 @@ const UserDashboard = () => {
                 </div>
             
 
-            <div className="dashboardDiv">
+            <div className="dashboardComponentDiv">
             <h2>Your panels</h2>
             { panelsVisible ? 
             ( <>
@@ -120,10 +123,10 @@ const UserDashboard = () => {
                         <li key={panel._id}>
                             <div className="dashboardDiv">
                                 <h3>{panel.systemId}</h3>
-                                <p>Location latitude: {panel.location.coordinates[0]}</p>
-                                <p>Location longitude: {panel.location.coordinates[1]}</p>
-                                <p>Installed power: {panel.installedPower}</p>
-                                <p>Current power: {panel.currentPower}</p>
+                                <p> <strong>Location latitude:</strong> {panel.location.coordinates[0]}</p>
+                                <p><strong>Location longitude:</strong> {panel.location.coordinates[1]}</p>
+                                <p><strong>Installed power (kW):</strong> {panel.installedPower}</p>
+                                <p><strong>Current power (kW):</strong> {panel.currentPower}</p>
                                 <button type="submit" onClick={() => handleRemovePanel(panel.systemId)} className="secondaryBtn">Remove this panel system</button>
                                 <button type="submit" onClick={() => handleShowChart(panel.systemId)} className="secondaryBtn">Get consumption and production data of this system</button>
                             </div>
@@ -142,7 +145,7 @@ const UserDashboard = () => {
             )}
             </div>
 
-            <div className="dashboardDiv">
+            <div className="dashboardComponentDiv">
             <h2>Your batteries</h2>
             { batteriesVisible ? (
             <>
@@ -154,14 +157,13 @@ const UserDashboard = () => {
                         <li key={battery._id}>
                             <div className="dashboardDiv">
                                 <h3>{battery.systemId}</h3>
-                                <p>Location latitude: {battery.location.coordinates[0]}</p>
-                                <p>Location longitude: {battery.location.coordinates[1]}</p>
-                                <p>Capacity: {battery.capacity}</p>
-                                <p>Power: {battery.power}</p>
-                                <p>Charge level: {battery.chargeLevel}</p>
-                                <p>Charging duration: {battery.chargingDuration}</p>
-                                <p>Disharging duration: {battery.dischargingDuration}</p>
-                                <p>State: {battery.state}</p>
+                                <p> <strong>Location latitude:</strong> {battery.location.coordinates[0]}</p>
+                                <p><strong>Location longitude:</strong> {battery.location.coordinates[1]}</p>
+                                <p><strong>Capacity (kWh): </strong>{battery.capacity}</p>
+                                <p><strong>Power (kW):</strong> {battery.power}</p>
+                                <p><strong>Charge level(kWh):</strong> {battery.chargeLevel}</p>
+                                <p><strong>Charging/discharging duration (h): </strong>{battery.chargingDuration}</p>
+                                <p><strong>State:</strong> {battery.state}</p>
                             </div>
                         </li>
                     ))}

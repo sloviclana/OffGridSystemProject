@@ -10,7 +10,7 @@ const PanelSystemOverview = () => {
         <div className="centralDiv">
             <div className="myChartDiv">
                 <h1>Panel System Energy Overview for system: {receivedData.panelSystemId}</h1>
-                <MyChart data={receivedData.data}></MyChart>
+                <MyChart data={receivedData.data} battery={receivedData.battery}></MyChart>
             </div>
         </div>
     );

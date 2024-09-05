@@ -1,8 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import {blockUser, getAllUsers, unblockUser} from '../Services/UserService.js';
-import { getAllPanelsForUser, getAllBatteriesForUser, removePanelAndBatterySystem } from "../Services/PanelBatteryService.js";
-
+import { useNavigate } from "react-router-dom";
+import { getAllPanelsForUser, getAllBatteriesForUser, getBatteryChargeLevelDataHistory, removePanelAndBatterySystem, getConsumptionDataHistory, getPanelProductionDataHistory } from "../Services/PanelBatteryService";
 
 const AdminDashboard = () => {
 
@@ -15,7 +15,7 @@ const AdminDashboard = () => {
     const [panelsByUser, setPanelsByUser] = useState({});
     const [batteriesByUser, setBatteriesByUser] = useState({});
 
-
+    const navigate = useNavigate();
     const userFromStorage = JSON.parse(sessionStorage.getItem('user'));
     const tokenFromStorage = sessionStorage.getItem('token');
 
@@ -68,6 +68,44 @@ const AdminDashboard = () => {
         setUsersVisible(false);
     };
 
+    const handleShowChart = async(panelSystemId) => {
+        const consumptionData = await getConsumptionDataHistory(tokenFromStorage);
+        const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage);
+        const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage);
+        const data = {
+            labels: panelProductionData.labels,
+            datasets: [
+                {
+                    label: 'Panel production',
+                    data: panelProductionData.productionData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: 'Battery charge level',
+                    data: batteryChargeLevelData.chargeLevelData,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: 'User consumption',
+                    data: (consumptionData.concat(consumptionData)).concat(consumptionData),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                }
+            ]
+        };
+
+        const dataToSend = {data, panelSystemId};
+        navigate('/panelSystemOverview', {state: dataToSend});
+    };
+
     const handleBlockUser = async(id) => {
         const blockedUser = await blockUser(id, tokenFromStorage);
         console.log(blockedUser);
@@ -88,24 +126,28 @@ const AdminDashboard = () => {
 
     return (
         <div>
-            <div>
+            <div className="centralDiv">
+            <div className="adminDashboardDiv">
             {user === null ? (
                 <h2>Welcome to your dashboard!</h2>
                             ) : (
-                <h2>Welcome to your dashboard, {user.firstName}!</h2>
+                <h2>Welcome to your dashboard, <span className="highlight">{user.firstName}</span>!</h2>
                 )}
+            
+           
 
             {usersVisible ? 
             (
                 <>
+                <h3>List of all users:</h3>
                     <ul>
                 {users.map((user, index) => (
                     <li key={user._id}>
-                        <div className="dashboardDiv">
+                        <div className="adminDashboardComponentDiv">
                             <h3>{user.firstName} {user.lastName}</h3>
-                            <p>Email: {user.email}</p>
-                            <p>Is this user blocked? {user.isBlocked.toString() === 'false' ? 
-                                            ('this user is not blocked') : ('this user is blocked')}</p>
+                            <p> <strong>Email:</strong> {user.email}</p>
+                            <p><strong>Is this user blocked? </strong> {user.isBlocked.toString() === 'false' ? 
+                                            ('This user is NOT blocked') : ('This user IS blocked')}</p>
                             
                             <p>PanelSystems of user: </p>
 
@@ -117,11 +159,12 @@ const AdminDashboard = () => {
                                                             <li key={panel._id}>
                                                                 <div className="dashboardDiv">
                                                                     <h3>{panel.systemId} panel</h3>
-                                                                    <p>Location latitude: {panel.location.coordinates[0]}</p>
-                                                                    <p>Location longitude: {panel.location.coordinates[1]}</p>
-                                                                    <p>Installed power: {panel.installedPower}</p>
-                                                                    <p>Current power: {panel.currentPower}</p>
+                                                                    <p><strong>Location latitude:</strong>  {panel.location.coordinates[0]}</p>
+                                                                    <p><strong>Location longitude:</strong> {panel.location.coordinates[1]}</p>
+                                                                    <p><strong>Installed power (kW):</strong> {panel.installedPower}</p>
+                                                                    <p><strong>Current power (kW):</strong>  {panel.currentPower}</p>
                                                                     <button type="submit" onClick={() => handleRemovePanel(panel.systemId)} className="secondaryBtn">Remove this panel system</button>
+                                                                    <button type="submit" onClick={() => handleShowChart(panel.systemId)} className="secondaryBtn">Get consumption and production data of this system</button>
                                                                 </div>
                                                             </li>
                                                         ))}
@@ -137,14 +180,13 @@ const AdminDashboard = () => {
                                                             <li key={battery._id}>
                                                                 <div className="dashboardDiv">
                                                                     <h3>{battery.systemId} battery</h3>
-                                                                    <p>Location latitude: {battery.location.coordinates[0]}</p>
-                                                                    <p>Location longitude: {battery.location.coordinates[1]}</p>
-                                                                    <p>Capacity: {battery.capacity}</p>
-                                                                    <p>Power: {battery.power}</p>
-                                                                    <p>Charge level: {battery.chargeLevel}</p>
-                                                                    <p>Charging duration: {battery.chargingDuration}</p>
-                                                                    <p>Disharging duration: {battery.dischargingDuration}</p>
-                                                                    <p>State: {battery.state}</p>
+                                                                    <p><strong>Location latitude:</strong>  {battery.location.coordinates[0]}</p>
+                                                                    <p><strong>Location longitude:</strong> {battery.location.coordinates[1]}</p>
+                                                                    <p><strong>Capacity (kWh): </strong> {battery.capacity}</p>
+                                                                    <p><strong>Power (kW):</strong> {battery.power}</p>
+                                                                    <p><strong>Charge level(kWh):</strong>{battery.chargeLevel}</p>
+                                                                    <p><strong>Charging/discharging duration (h): </strong> {battery.chargingDuration}</p>
+                                                                    <p><strong>State:</strong> {battery.state}</p>
                                                                 </div>
                                                             </li>
                                                         ))}
@@ -180,7 +222,7 @@ const AdminDashboard = () => {
             <button type="submit" onClick={handleShowUsers} className="primaryBtn">Show users</button>
             </>
             )}
-            
+            </div>
             </div>
         </div>
     )

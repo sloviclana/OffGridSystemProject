@@ -67,7 +67,7 @@ const LogIn = ({ handleUserInfo }) => {
   };
 
   return (
-    <div className="centralDiv">
+    <div className="homePageDiv">
       <div className="centralComponentDiv">
         <h2>Login</h2>
         <div>

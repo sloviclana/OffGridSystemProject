@@ -65,7 +65,7 @@ const Register = ({handleUserInfo}) => {
     
 
   return (
-        <div className="centralDiv">
+        <div className="homePageDiv">
             <div className="centralComponentDiv">
             <h2>Register</h2>
         <div>

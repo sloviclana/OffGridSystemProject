@@ -9,5 +9,6 @@ router.post('/deletePanelBatterySystem', panelsBatteriesController.deletePanelBa
 router.get('/getConsumptionDataHistory', panelsBatteriesController.getConsumptionDataHistory);
 router.get('/getPanelProductionDataHistory', panelsBatteriesController.getPanelProductionDataHistory);
 router.get('/getBatteryChargeLevelDataHistory', panelsBatteriesController.getBatteryChargeLevelDataHistory);
+router.get('/getBatteryBySystemId', panelsBatteriesController.getBatteryBySystemId);
 
 export default router; 

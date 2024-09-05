@@ -9,7 +9,7 @@
 
 .dashboardDiv {
   border: 5cap;
-  background-color: #52b471;
+  background-color: #3b734c;
   border-radius: 5ch;
   background-size: auto;
   text-align: center;
@@ -76,9 +76,22 @@ body {
   background-image: url('../public/backgroundPhoto.png');
   background-size: cover; /* Pokriva celu pozadinu */
   background-position: center; /* Pozicionira sliku u centar */
-  background-repeat: no-repeat; /* Sprečava ponavljanje slike */
+  background-repeat:repeat-y; /* Sprečava ponavljanje slike */
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.homePageDiv {
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  min-height: 95vh; /* Bez navodnika */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  padding-right: 15%;
+}
+
 
 .centralDiv {
   text-align: center;
@@ -97,6 +110,62 @@ body {
   width: 400px;
   z-index: 1;
   padding: 20px; /* Bez navodnika */
+  border: 2px solid white;
+  border-radius: 10px;
+}
+
+.highlight {
+  color: rgb(158, 205, 178);
+}
+
+.dashboardComponentDiv {
+  background-color: rgb(31, 59, 42);
+  position: relative;
+  width: 400px;
+  color: white;
+  z-index: 1;
+  padding: 20px; /* Bez navodnika */
+  border: 2px solid white;
+  border-radius: 10px;
+}
+
+.parametersDiv {
+  background-color: rgb(31, 59, 42);
+  position: relative;
+  width: 400px;
+  color: white;
+  z-index: 1;
+  padding: 20px; /* Bez navodnika */
+  border: 2px solid white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.adminDashboardComponentDiv {
+  background-color: rgb(31, 59, 42);
+  background-position: center;
+  display: flex;
+  flex-direction:column;
+  justify-content: center;
+  align-items: center;
+  position:relative;
+  width: 800px;
+  color: white;
+  z-index: 1;
+  border: 2px solid white;
+  border-radius: 10px;
+}
+
+.adminDashboardDiv {
+  background-color: rgb(31, 59, 42);
+  position:relative;
+  width: 900px;
+  color: white;
+  z-index: 1;
+  padding-left: 10%;
   border: 2px solid white;
   border-radius: 10px;
 }
@@ -221,7 +290,7 @@ body {
 
 .secondaryBtn {
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #0ddf68;
+  background-color: #1c2a22;
   text-transform: none; /* Tekst ostaje kakav jeste */
   margin: 0.5rem; /* Dodata margina za stilizaciju */
   border-radius:7px;

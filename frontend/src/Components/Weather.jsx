@@ -10,9 +10,9 @@ const Weather = () => {
   const [location, setLocation] = useState(null);
   const [installedPower, setInstalledPower] = useState(null);
   const [formData, setFormData] = useState({
-    installedPower: 0,
-    capacity: 0,
-    power: 0,
+    installedPower: null,
+    capacity: null,
+    power: null,
     chargingDuration: 0, 
     dischargingDuration: 0
   });

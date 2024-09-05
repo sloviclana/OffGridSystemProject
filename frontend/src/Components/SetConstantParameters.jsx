@@ -81,13 +81,13 @@ const SetConstantParameters = () => {
   }
 
     return (
-        <div>
-            <div>
-                <h2>Here you can enter or update constant parameters for calculating energy production</h2>
+        <div className="homePageDiv">
+            <div className="parametersDiv">
+                <h2>Here you can enter or update constant parameters for calculating energy production:</h2>
 
                 <form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="n" >n:</label>
+                    <label htmlFor="n" ><strong>n (%):  </strong></label>
                     <input
                         type="number"
                         id="n"
@@ -99,7 +99,7 @@ const SetConstantParameters = () => {
                 </div>
 
                 <div>
-                <label htmlFor="B" >B:</label>
+                <label htmlFor="B" ><strong>B:   </strong></label>
                 <input
                     type="number"
                     id="B"
@@ -111,7 +111,7 @@ const SetConstantParameters = () => {
                 </div>
 
                 <div>
-                <label htmlFor="Tref" >Tref:</label>
+                <label htmlFor="Tref" ><strong>Tref:   </strong></label>
                 <input
                     type="number"
                     id="Tref"
@@ -123,7 +123,7 @@ const SetConstantParameters = () => {
                 </div>
 
                 <div >
-                <label htmlFor="k">k:</label>
+                <label htmlFor="k"><strong>k:   </strong></label>
                 <input
                     type="number"
                     id="k"

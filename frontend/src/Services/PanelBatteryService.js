@@ -110,4 +110,21 @@ export const getBatteryChargeLevelDataHistory = async(id, token) => {
   }
 };
 
+export const getBatteryBySystemId = async (systemId, token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/panels/getBatteryBySystemId?systemId=${systemId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+          }
+      }
+      );
+      return response.data;
+  }
+  catch (error) {
+    console.error("Couldn't get battery for this id!");
+    throw error;
+  }
+}
 

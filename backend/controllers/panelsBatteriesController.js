@@ -45,6 +45,22 @@ const panelsBatteriesController = {
             }
     },
 
+    getBatteryBySystemId: async(req, res) => {
+        try {
+            console.log(req.query);
+
+            const systemid = req.query.systemId;
+
+            const battery = await BatteryModel.findOne({systemId: systemid});
+
+            return res.status(200).json(battery);
+        }
+        catch(error) {
+            console.error(error);
+            return res.status(500).json({ message: "An error occurred while getting battery with system id: " + systemid});
+        }
+    },
+
     getConsumptionDataHistory: async(req, res) => {
         try {
             const data = await ConsumptionDataModel.find();
@@ -65,16 +81,6 @@ const panelsBatteriesController = {
         }
     },
 
-    /* getPreviousThreeDaysData: (data) => {
-        const now = new Date();
-        const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-    
-        return data.filter(entry => {
-            const timestamp = new Date(entry.timestamp);
-            return timestamp >= threeDaysAgo && timestamp <= now;
-        });
-    }, */
-
     getPanelProductionDataHistory: async function (req, res) {
         try {
             console.log(req.query);
@@ -86,27 +92,31 @@ const panelsBatteriesController = {
             const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
 
             const getPreviousThreeDaysData = (data) => {
-                const now = new Date();
-                const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-    
+                const now = new Date();  
+                const nowUTC = new Date(now.toISOString()); 
+                const threeDaysAgoUTC = new Date(nowUTC.getTime() - 3 * 24 * 60 * 60 * 1000); 
+            
+                // Filtriraj samo zapise u opsegu poslednja tri dana
                 return data.filter(entry => {
-                    const timestamp = new Date(entry.timestamp);
-                    return timestamp >= threeDaysAgo && timestamp <= now;
+                    const timestampUTC = new Date(entry.timestamp);  
+                    return timestampUTC >= threeDaysAgoUTC && timestampUTC <= nowUTC;
                 });
             };
-
+            
             const filteredData = getPreviousThreeDaysData(data);
-
-            // Inicijalizuj objekat za svaki dan u poslednja tri dana
+            
+            // Inicijalizuj prazan objekat za svaki dan u poslednja tri dana
             const dayData = {};
-
+            
+            // Prođi kroz filtrirane podatke i grupiši ih po danima i satima
             filteredData.forEach(entry => {
                 const date = new Date(entry.timestamp);
+                date.setUTCHours(date.getUTCHours() + 2);
                 const day = date.toISOString().split('T')[0]; // YYYY-MM-DD format
-                const hour = date.getHours();
-
+                const hour = date.getUTCHours() ; // Uzmemo sat u UTC vremenu
+            
                 if (!dayData[day]) {
-                    dayData[day] = new Array(24).fill(0); // 24 sata
+                    dayData[day] = {}; // Umesto niza sa 24 sata, koristi objekat
                 }
 
                 dayData[day][hour] = entry.currentPower; // Pretpostavljamo da je chargeLevel ono što prikazujemo
@@ -144,27 +154,31 @@ const panelsBatteriesController = {
             const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
 
             const getPreviousThreeDaysData = (data) => {
-                const now = new Date();
-                const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-    
+                const now = new Date();  // Trenutno vreme u lokalnoj vremenskoj zoni
+                const nowUTC = new Date(now.toISOString()); // Trenutno vreme u UTC
+                const threeDaysAgoUTC = new Date(nowUTC.getTime() - 3 * 24 * 60 * 60 * 1000);  // Pre tri dana u UTC
+            
+                // Filtriraj samo zapise u opsegu poslednja tri dana, koristeći UTC za timestamp-ove
                 return data.filter(entry => {
-                    const timestamp = new Date(entry.timestamp);
-                    return timestamp >= threeDaysAgo && timestamp <= now;
+                    const timestampUTC = new Date(entry.timestamp);  // Pretvaranje entry.timestamp u UTC
+                    return timestampUTC >= threeDaysAgoUTC && timestampUTC <= nowUTC;
                 });
             };
-
+            
             const filteredData = getPreviousThreeDaysData(data);
-
-            // Inicijalizuj objekat za svaki dan u poslednja tri dana
+            
+            // Inicijalizuj prazan objekat za svaki dan u poslednja tri dana
             const dayData = {};
-
+            
+            // Prođi kroz filtrirane podatke i grupiši ih po danima i satima
             filteredData.forEach(entry => {
                 const date = new Date(entry.timestamp);
+                date.setUTCHours(date.getUTCHours() + 2);
                 const day = date.toISOString().split('T')[0]; // YYYY-MM-DD format
-                const hour = date.getHours();
-
+                const hour = date.getUTCHours(); // Uzmemo sat u UTC vremenu
+            
                 if (!dayData[day]) {
-                    dayData[day] = new Array(24).fill(0); // 24 sata
+                    dayData[day] = {}; // Umesto niza sa 24 sata, koristi objekat
                 }
 
                 dayData[day][hour] = entry.chargeLevel; // Pretpostavljamo da je chargeLevel ono što prikazujemo
@@ -225,11 +239,8 @@ const panelsBatteriesController = {
         return currentConsumption;
     },
 
-    calculatePowerProductionForPanelSystem: async (panelSystemId, weatherData) => {
+    checkIfItsNight: async function(sunset, sunrise) {
         try {
-            const lastEntryConstParams = await ConstantParametersModel.findOne().sort({ timestamp: -1 });
-            const sunset = new Date(weatherData.sys.sunset * 1000);
-            const sunrise = new Date(weatherData.sys.sunrise * 1000);
             let isNight = false;
 
             const sunsetTime = sunset.getHours() * 3600 + sunset.getMinutes() * 60 + sunset.getSeconds();
@@ -239,9 +250,20 @@ const panelsBatteriesController = {
             
             isNight = currentTime >= sunsetTime || currentTime <= sunriseTime;
 
+            return isNight;
+        }
+        catch(error) {
+            console.log(error, "Cannot check if its night!");
+        }
+    },
+
+    calculateCurrentPower: async function (panel, weatherData) {
+        try{
+            const lastEntryConstParams = await ConstantParametersModel.findOne().sort({ timestamp: -1 });
             let Ptrenutno = 0;
-            const panel = await PanelModel.findOne({systemId: panelSystemId});
-            const battery = await BatteryModel.findOne({systemId: panelSystemId});
+            const sunset = new Date(weatherData.sys.sunset * 1000);
+            const sunrise = new Date(weatherData.sys.sunrise * 1000);
+            let isNight = await this.checkIfItsNight(sunset, sunrise);
 
             if(isNight) {
                 Ptrenutno = 0;
@@ -250,17 +272,26 @@ const panelsBatteriesController = {
             } else {
                 const Tcelija = weatherData.main.temp + lastEntryConstParams.k * (1 - weatherData.clouds.all/100);
                 const fTcelija = 1 - lastEntryConstParams.B * (Tcelija - lastEntryConstParams.Tref);
-                Ptrenutno = panel.installedPower * lastEntryConstParams.n * (1 - weatherData.clouds.all/100) * fTcelija;
-                
+                Ptrenutno = panel.installedPower * lastEntryConstParams.n/100 * (1 - weatherData.clouds.all/100) * fTcelija;
             }
             
             await PanelProductionHistoryDataModel.create({
                 panelId: panel._id,
                 currentPower: Ptrenutno,
-                systemId: panelSystemId,
+                systemId: panel.systemId,
                 owner: panel.owner
             });
 
+            return Ptrenutno;
+        }
+        catch(error) {
+            console.log("Could not calculate current power.", error);
+        }
+    },
+
+    getCurrentConsumption: async function() {
+
+        try{
             const now = new Date();
             const currentHour = now.getHours();
 
@@ -273,49 +304,73 @@ const panelsBatteriesController = {
                     }
                 }
             ]);
-    
+
             const currentConsumption = consumptionData[0].dailyValue * consumptionData[0].currentConsumption;
 
+            return currentConsumption;
+        }
+        catch(error) {
+            console.log("Could not get current consumption.", error);
+        }
+    },
+
+    handlePowerSuficit: async function(powerSuficit, battery, Ptrenutno) {
+        let batteryChargedPerHour = battery.power*1;
+        let updateData = {};
+        let batteryState = '';
+        let newChargeLevel = 0.0;
+
+        if(powerSuficit < batteryChargedPerHour)
+            batteryChargedPerHour = powerSuficit;
+
+        if(battery.chargeLevel === battery.capacity) {
+            batteryState='inaction';
+            newChargeLevel = battery.capacity;
+            updateData = { state: batteryState, chargeLevel: newChargeLevel, Pcurrent: Ptrenutno };
+        }
+        else if (battery.chargeLevel + batteryChargedPerHour >= battery.capacity) 
+        {
+            newChargeLevel = battery.capacity;
+            batteryState = 'charging';
+            const suficit = battery.capacity - battery.chargeLevel;
+            Ptrenutno = Ptrenutno - suficit;
+            updateData = { state: batteryState, chargeLevel: newChargeLevel, Pcurrent: Ptrenutno  };
+        }
+        else 
+        {
+            batteryState = 'charging';
+            newChargeLevel = battery.chargeLevel + batteryChargedPerHour;
+            Ptrenutno = Ptrenutno - batteryChargedPerHour;
+            updateData = { state: batteryState, chargeLevel: newChargeLevel, Pcurrent: Ptrenutno };
+        }
+
+        return updateData;
+    },
+
+    calculatePowerProductionForPanelSystem: async function (panelSystemId, weatherData) {
+        try {
+            const panel = await PanelModel.findOne({systemId: panelSystemId});
+            const battery = await BatteryModel.findOne({systemId: panelSystemId});
+            let Pcurrent = await this.calculateCurrentPower(panel, weatherData);
+            const currentConsumption = await this.getCurrentConsumption();
             let batteryState = '';
             let newChargeLevel = 0.0;
 
-            if(currentConsumption < Ptrenutno) {
-                const powerSuficit = Ptrenutno - currentConsumption;
-                let updateData = {};
-                let batteryChargedPerHour = battery.power*1; //vreme punjenja 1h
-
-                if(powerSuficit < batteryChargedPerHour)
-                    batteryChargedPerHour = powerSuficit;
-
-                if(battery.chargeLevel === battery.capacity) {
-                    batteryState='inaction';
-                    newChargeLevel = battery.capacity;
-                    updateData = { state: batteryState, chargeLevel: newChargeLevel };
-                }
-                else if (battery.chargeLevel + batteryChargedPerHour >= battery.capacity) 
-                {
-                    newChargeLevel = battery.capacity;
-                    batteryState = 'charging';
-                    updateData = { state: batteryState, chargeLevel: newChargeLevel };
-                    const suficit = battery.capacity - battery.chargeLevel;
-                    Ptrenutno = Ptrenutno - suficit;
-                }
-                else 
-                {
-                    batteryState = 'charging';
-                    newChargeLevel = battery.chargeLevel + batteryChargedPerHour;
-                    updateData = { state: batteryState, chargeLevel: newChargeLevel };
-                    Ptrenutno = Ptrenutno - batteryChargedPerHour;
-                }
+            if(currentConsumption < Pcurrent) {
+                const powerSuficit = Pcurrent - currentConsumption;
+                const updateDataFull = await this.handlePowerSuficit(powerSuficit, battery, Pcurrent);
+                Pcurrent = updateDataFull.Pcurrent;
+                batteryState = updateDataFull.state;
+                newChargeLevel = updateDataFull.chargeLevel;
+                const updateData = {state: updateDataFull.state, chargeLevel: updateDataFull.chargeLevel}
                 const batteryNewState = await BatteryModel.findByIdAndUpdate(battery._id, { $set: updateData }, { new: true });
-                
             } 
-            else if (currentConsumption > Ptrenutno) 
+            else if (currentConsumption > Pcurrent) 
             {
-                const powerDeficit = currentConsumption - Ptrenutno;
-                
+                const powerDeficit = currentConsumption - Pcurrent;
                 batteryState = 'discharging';
                 let batteryDischargedPerHour = battery.power*1;
+
                 if(powerDeficit < batteryDischargedPerHour)
                     batteryDischargedPerHour = powerDeficit;
 
@@ -337,7 +392,7 @@ const panelsBatteriesController = {
                 const batteryNewState = await BatteryModel.findByIdAndUpdate(battery._id, { $set: updateData }, { new: true });
             }
 
-            const panelUpdateData = { currentPower: Ptrenutno };
+            const panelUpdateData = { currentPower: Pcurrent };
             const panelNewCurrentPower = await PanelModel.findByIdAndUpdate(panel._id, { $set: panelUpdateData }, { new: true });
 
             await BatteryProductionHistoryDataModel.create({
@@ -348,8 +403,9 @@ const panelsBatteriesController = {
                 chargeLevel: newChargeLevel
             });
             
-            console.log('Date: ' + nowTime + ', current producted power for panel system ' + panelSystemId + ' is: ' + Ptrenutno);
-            return Ptrenutno;
+            const time = new Date();
+            console.log('Date: ' + time + ', current producted power for panel system ' + panelSystemId + ' is: ' + Pcurrent);
+            return Pcurrent;
 
         }
         catch(error) {
