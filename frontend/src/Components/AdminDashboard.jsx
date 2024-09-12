@@ -70,8 +70,8 @@ const AdminDashboard = () => {
 
     const handleShowChart = async(panelSystemId) => {
         const consumptionData = await getConsumptionDataHistory(tokenFromStorage);
-        const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage);
-        const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage);
+        const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, 3);
+        const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage, 3);
         const data = {
             labels: panelProductionData.labels,
             datasets: [

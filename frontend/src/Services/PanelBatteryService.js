@@ -74,9 +74,9 @@ export const getConsumptionDataHistory = async(token) => {
 
 };
 
-export const getPanelProductionDataHistory = async(id, token) => {
+export const getPanelProductionDataHistory = async(id, token, days) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/panels/getPanelProductionDataHistory?systemId=${id}`,
+    const response = await axios.get(`${API_BASE_URL}/panels/getPanelProductionDataHistory?systemId=${id}&days=${days}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -92,9 +92,9 @@ export const getPanelProductionDataHistory = async(id, token) => {
   }
 };
 
-export const getBatteryChargeLevelDataHistory = async(id, token) => {
+export const getBatteryChargeLevelDataHistory = async(id, token, days) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/panels/getBatteryChargeLevelDataHistory?systemId=${id}`,
+    const response = await axios.get(`${API_BASE_URL}/panels/getBatteryChargeLevelDataHistory?systemId=${id}&days=${days}`,
       {
         headers: {
           "Content-Type": "application/json",

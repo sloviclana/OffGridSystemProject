@@ -33,6 +33,13 @@ async function connect() {
 
             app.listen(5000, () => {
                 console.log("server started on port 5000") 
+                /*
+                const systemid = 'PanelSystem2';
+                const timestamp1 = new Date('2024-08-30T00:00:00Z');
+                const timestamp2 = new Date('2024-08-31T23:59:59Z');
+
+                panelsBatteriesController.generateHistoryDataReport(timestamp1, timestamp2, systemid);*/
+                //panelsBatteriesController.updateHistoryDataForAllPanelSystems();
                 cron.schedule('0 * * * *', () => {
                     try {
                       panelsBatteriesController.updateWeatherDataForAllSystems();
