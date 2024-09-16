@@ -58,6 +58,7 @@ const mapController = {
             return res.status(201).json({panel, battery});
         }
         catch (err) {
+            console.log(err);
             return res.status(500).json({ message: "Error with creating new panel! Try again.", error: err });
         }
         

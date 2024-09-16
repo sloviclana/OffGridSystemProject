@@ -1,15 +1,14 @@
 import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllPanelsForUser, getAllBatteriesForUser, 
-    getBatteryChargeLevelDataHistory, removePanelAndBatterySystem, 
-    getConsumptionDataHistory, getPanelProductionDataHistory, getBatteryBySystemId } from "../Services/PanelBatteryService";
+    removePanelAndBatterySystem, getPanelProductionDataHistory,
+     getBatteryBySystemId } from "../Services/PanelBatteryService";
 
 const UserDashboard = () => {
 
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-    //const [refreshData, setRefreshData] = useState(false); // Dodajemo state za osvježavanje podataka
     const [panels, setPanels] = useState([]);
     const [batteries, setBatteries] = useState([]);
     const [panelsVisible, setPanelsVisible] = useState(false);
@@ -29,9 +28,9 @@ const UserDashboard = () => {
     }, []);
 
     const handleShowChart = async(panelSystemId) => {
-        const consumptionData = await getConsumptionDataHistory(tokenFromStorage);
+        
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, 3);
-        const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage, 3);
+        
         const battery = await getBatteryBySystemId(panelSystemId);
         const data = {
             labels: panelProductionData.labels,
@@ -46,7 +45,7 @@ const UserDashboard = () => {
                 },
                 {
                     label: 'Battery charge level',
-                    data: batteryChargeLevelData.chargeLevelData,
+                    data: panelProductionData.batteryChargeLevelData,
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     fill: true,
@@ -54,7 +53,7 @@ const UserDashboard = () => {
                 },
                 {
                     label: 'User consumption',
-                    data: (consumptionData.concat(consumptionData)).concat(consumptionData),
+                    data: panelProductionData.consumptionData,
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     fill: true,

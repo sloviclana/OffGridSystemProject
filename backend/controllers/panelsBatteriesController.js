@@ -4,7 +4,6 @@ import UserModel from '../models/User.js';
 import mongoose from 'mongoose';
 import WeatherDataModel from '../models/WeatherData.js';
 import axios from 'axios';
-import { PanelProductionHistoryDataModel, BatteryProductionHistoryDataModel } from '../models/ProductionHistoryData.js';
 import ConsumptionDataModel from '../models/ConsumptionData.js';
 import ConstantParametersModel from '../models/ConstantParameters.js';
 import HistoryDataModel from '../models/HistoryData.js';
@@ -112,44 +111,13 @@ const panelsBatteriesController = {
         }
     },
 
-    getConsumptionDataHistory: async(req, res) => {
-        try {
-            const data = await ConsumptionDataModel.find();
-
-            const result = [];
-
-            for(const item of data) {
-                const currentConsumption = item.dailyValue * item.currentConsumption;
-                result.push(currentConsumption);
-            }
-
-            return res.status(200).json(result);
-        } 
-        catch(error) 
-        {
-            console.log(error);
-            return res.status(500).json({message: 'Cannot get consumption data history!'});
-        }
-    },
-    
-    getPreviousDaysData: async function (data) {
-        const now = new Date();  // Trenutno vreme u lokalnoj vremenskoj zoni
-        const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);  // Pre tri dana
-    
-        // Filtriraj samo zapise u opsegu poslednja tri dana
-        data.filter(entry => entry.timestamp >= threeDaysAgo && entry.timestamp <= now);
-
-        return data;
-    },
-
     getPanelProductionDataHistory: async function (req, res) {
         try {
             console.log(req.query);
 
             const id = req.query.systemId;
-            const days = parseInt(req.query.days, 10); // Parsiranje u integer sa bazom 10
+            const days = parseInt(req.query.days, 10);
 
-            // Provera da li je broj validan
             if (isNaN(days) || days <= 0) {
                 return res.status(400).json({ message: 'Invalid number of days!' });
             }
@@ -162,13 +130,11 @@ const panelsBatteriesController = {
             const daysAgo = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
             const threeDaysLater = new Date(daysAgoUTC.getTime() + 3 * 24 * 60 * 60 * 1000);
             
-            // Filtriraj samo zapise u opsegu poslednja tri dana
             const filteredData = data.filter(entry => entry.timestamp >= daysAgoUTC && entry.timestamp <= threeDaysLater);
             
-            // Inicijalizuj prazan objekat za svaki dan u poslednja tri dana
             const dayData = {};
             
-            // Prođi kroz filtrirane podatke i grupiši ih po danima i satima
+            // group by date and time
             filteredData.forEach(entry => {
                 const date = entry.timestamp;
                 const dateStr = date.toString();
@@ -177,7 +143,7 @@ const panelsBatteriesController = {
                 const cleanDateStr = cleanDateStrFull.slice(0, -3);
             
                 if (!dayData[cleanDateStr]) {
-                    dayData[cleanDateStr] = {}; // Umesto niza sa 24 sata, koristi objekat
+                    dayData[cleanDateStr] = {}; 
                 }
 
                 dayData[cleanDateStr] = {
@@ -198,13 +164,12 @@ const panelsBatteriesController = {
                 batteryChargeLevelData.push(dayData[cleanDateStr].batteryChargeLevel);
                 consumptionData.push(dayData[cleanDateStr].currentConsumption);
             }
-
-            // Pripremanje rezultata sa više skupova podataka
+            
             const result = {
                 labels,
-                productionData,       // Podaci o trenutnoj snazi panela
-                batteryChargeLevelData,          // Podaci o napunjenosti baterije
-                consumptionData       // Podaci o trenutnoj potrošnji
+                productionData,      
+                batteryChargeLevelData,        
+                consumptionData       
             };
 
             return res.status(200).json(result);
@@ -213,66 +178,6 @@ const panelsBatteriesController = {
         {
             console.log(error);
             return res.status(500).json({message: 'Cannot get panel production data history!'});
-        }
-    },
-
-    getBatteryChargeLevelDataHistory: async(req, res) => {
-        try {
-            console.log(req.query);
-
-            const id = req.query.systemId;
-            const days = parseInt(req.query.days, 10); // Parsiranje u integer sa bazom 10
-
-            // Provera da li je broj validan
-            if (isNaN(days) || days <= 0) {
-                return res.status(400).json({ message: 'Invalid number of days!' });
-            }
-
-            const data = await HistoryDataModel.find({systemId: id});
-
-            const now = new Date();  
-            const nowUTC = new Date(now.toISOString()); 
-            const daysAgoUTC = new Date(nowUTC.getTime() - days * 24 * 60 * 60 * 1000); 
-            const daysAgo = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-            const threeDaysLater = new Date(daysAgoUTC.getTime() + 3 * 24 * 60 * 60 * 1000);
-            
-            // Filtriraj samo zapise u opsegu poslednja tri dana
-            const filteredData = data.filter(entry => entry.timestamp >= daysAgoUTC && entry.timestamp <= threeDaysLater);
-            
-            // Inicijalizuj prazan objekat za svaki dan u poslednja tri dana
-            const dayData = {};
-            
-            // Prođi kroz filtrirane podatke i grupiši ih po danima i satima
-            filteredData.forEach(entry => {
-                const date = entry.timestamp;
-                const dateStr = date.toString();
-                const cleanDateStrDay = dateStr.split('G')[0].trim();
-                const cleanDateStrFull = cleanDateStrDay.slice(4);
-                const cleanDateStr = cleanDateStrFull.slice(0, -3);
-            
-                if (!dayData[cleanDateStr]) {
-                    dayData[cleanDateStr] = {}; // Umesto niza sa 24 sata, koristi objekat
-                }
-
-                dayData[cleanDateStr] = entry.batteryChargeLevel;
-            });
-
-            const chargeLevelData = [];
-            const labels = [];
-            // Postavi labele za dane
-            for (const cleanDateStr in dayData) {
-                labels.push(`${cleanDateStr}`);
-                chargeLevelData.push(dayData[cleanDateStr]);
-            }
-            
-            const result = {labels, chargeLevelData};
-
-            return res.status(200).json(result);
-        } 
-        catch(error) 
-        {
-            console.log(error);
-            return res.status(500).json({message: 'Cannot get battery charge level data history!'});
         }
     },
 
@@ -363,14 +268,7 @@ const panelsBatteriesController = {
                 const fTcelija = await this.calculateFunctionOfCellsTemperature(Tcelija);
                 Ptrenutno = panel.installedPower * lastEntryConstParams.n/100 * (1 - weatherData.clouds.all/100) * fTcelija;
             }
-            
-            await PanelProductionHistoryDataModel.create({
-                panelId: panel._id,
-                currentPower: Ptrenutno,
-                systemId: panel.systemId,
-                owner: panel.owner
-            });
-
+           
             return Ptrenutno;
         }
         catch(error) {
@@ -411,6 +309,7 @@ const panelsBatteriesController = {
             const Tcelija = await this.calculateCellsTemperature(weatherData.main.temp, weatherData.clouds.all);
             const fTcelija = await this.calculateFunctionOfCellsTemperature(Tcelija);
             let currentConsumption = await this.getCurrentConsumption();
+
             let newChargeLevel = 0.0;
             let newBatteryState = '';
             let batteryChargedPerHour = battery.power * 1;
@@ -451,7 +350,7 @@ const panelsBatteriesController = {
                 if(battery.chargeLevel === 0) {
                     newChargeLevel = 0;
                     newBatteryState = 'inaction';
-                    currentConsumption = 0;
+                    currentConsumption = Pcurrent;
                 }
                 else {
                     newChargeLevel = battery.chargeLevel - batteryChargeLevelReduction;
@@ -461,7 +360,7 @@ const panelsBatteriesController = {
 
                 if(newChargeLevel < 0) {
                     newChargeLevel = 0;
-                    currentConsumption = currentChargeLevel;
+                    currentConsumption = battery.chargeLevel;
                 }
 
                 const updateData = { state: newBatteryState, chargeLevel: newChargeLevel };
@@ -477,21 +376,6 @@ const panelsBatteriesController = {
 
             const panelUpdateData = { currentPower: Pcurrent };
             const panelNewCurrentPower = await PanelModel.findByIdAndUpdate(panel._id, { $set: panelUpdateData }, { new: true });
-
-            await BatteryProductionHistoryDataModel.create({
-                batteryId: battery._id,
-                state: newBatteryState,
-                owner: battery.owner,
-                systemId: battery.systemId,
-                chargeLevel: newChargeLevel
-            });
-
-            await PanelProductionHistoryDataModel.create({
-                panelId: panel._id,
-                currentPower: Pcurrent,
-                systemId: panel.systemId,
-                owner: panel.owner
-            });
 
             HistoryDataModel.create({
                 systemId: panelSystemId,
@@ -569,10 +453,9 @@ const panelsBatteriesController = {
 
         for (const panel of panels) {
 
-            const weatherDatasOfPanel = await WeatherDataModel.find({ systemId: panel.systemId })  // Pronađi podatke za odgovarajući 'systemId'
-                .sort({ timestamp: 1 })  // Sortiraj vremenske podatke hronološki
-                .exec();  // Izvrši upit
-        
+            const weatherDatasOfPanel = await WeatherDataModel.find({ systemId: panel.systemId })  
+                .sort({ timestamp: 1 })  
+                .exec();  
             
             let installedPower = panel.installedPower;
             let systemId = panel.systemId;
@@ -642,7 +525,7 @@ const panelsBatteriesController = {
                     if(currentChargeLevel === 0) {
                         newChargeLevel = 0;
                         newBatteryState = 'inaction';
-                        currentConsumption = 0;
+                        currentConsumption = currentPanelPower;
                     }
                     else {
                         newChargeLevel = currentChargeLevel - batteryChargeLevelReduction;
@@ -665,23 +548,6 @@ const panelsBatteriesController = {
                     const updateData = { state: newBatteryState, chargeLevel: newChargeLevel };
                     const batteryNewState = await BatteryModel.findByIdAndUpdate(battery._id, { $set: updateData }, { new: true });
                 }
-
-                await BatteryProductionHistoryDataModel.create({
-                    batteryId: battery._id,
-                    state: newBatteryState,
-                    owner: owner,
-                    systemId: systemId,
-                    chargeLevel: newChargeLevel,
-                    timestamp: timestamp
-                });
-    
-                await PanelProductionHistoryDataModel.create({
-                    panelId: panel._id,
-                    currentPower: currentPanelPower,
-                    systemId: systemId,
-                    owner: owner,
-                    timestamp: timestamp
-                });
 
                 HistoryDataModel.create({
                     systemId: systemId,

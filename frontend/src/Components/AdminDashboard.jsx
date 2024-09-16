@@ -2,7 +2,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import {blockUser, getAllUsers, unblockUser} from '../Services/UserService.js';
 import { useNavigate } from "react-router-dom";
-import { getAllPanelsForUser, getAllBatteriesForUser, getBatteryChargeLevelDataHistory, removePanelAndBatterySystem, getConsumptionDataHistory, getPanelProductionDataHistory } from "../Services/PanelBatteryService";
+import { getAllPanelsForUser, getAllBatteriesForUser, getBatteryBySystemId, 
+    removePanelAndBatterySystem, getPanelProductionDataHistory } from "../Services/PanelBatteryService";
 
 const AdminDashboard = () => {
 
@@ -69,9 +70,9 @@ const AdminDashboard = () => {
     };
 
     const handleShowChart = async(panelSystemId) => {
-        const consumptionData = await getConsumptionDataHistory(tokenFromStorage);
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, 3);
-        const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage, 3);
+        
+        const battery = await getBatteryBySystemId(panelSystemId);
         const data = {
             labels: panelProductionData.labels,
             datasets: [
@@ -85,7 +86,7 @@ const AdminDashboard = () => {
                 },
                 {
                     label: 'Battery charge level',
-                    data: batteryChargeLevelData.chargeLevelData,
+                    data: panelProductionData.batteryChargeLevelData,
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     fill: true,
@@ -93,7 +94,7 @@ const AdminDashboard = () => {
                 },
                 {
                     label: 'User consumption',
-                    data: (consumptionData.concat(consumptionData)).concat(consumptionData),
+                    data: panelProductionData.consumptionData,
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     fill: true,
@@ -102,7 +103,7 @@ const AdminDashboard = () => {
             ]
         };
 
-        const dataToSend = {data, panelSystemId};
+        const dataToSend = {data, panelSystemId, battery};
         navigate('/panelSystemOverview', {state: dataToSend});
     };
 
