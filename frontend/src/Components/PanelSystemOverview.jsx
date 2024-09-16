@@ -22,9 +22,7 @@ const PanelSystemOverview = () => {
       };
 
     const handleShowChart = async() => {
-        const consumptionData = await getConsumptionDataHistory(tokenFromStorage);
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, selectedNumber);
-        const batteryChargeLevelData = await getBatteryChargeLevelDataHistory(panelSystemId, tokenFromStorage, selectedNumber);
         const batteryData = await getBatteryBySystemId(panelSystemId);
 
         const data = {
@@ -40,7 +38,7 @@ const PanelSystemOverview = () => {
                 },
                 {
                     label: 'Battery charge level',
-                    data: batteryChargeLevelData.chargeLevelData,
+                    data: panelProductionData.batteryChargeLevelData,
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     fill: true,
@@ -48,7 +46,7 @@ const PanelSystemOverview = () => {
                 },
                 {
                     label: 'User consumption',
-                    data: (consumptionData.concat(consumptionData)).concat(consumptionData),
+                    data: panelProductionData.consumptionData,
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     fill: true,

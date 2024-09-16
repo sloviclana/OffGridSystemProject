@@ -77,6 +77,11 @@ const HistoryDataSchema = new Schema({
         required: true
     },
 
+    currentConsumption: {
+        type: Number,
+        required: true
+    },
+
     timestamp: {
         type: Date,
         default: Date.now

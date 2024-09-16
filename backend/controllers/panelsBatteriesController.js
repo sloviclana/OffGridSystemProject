@@ -180,18 +180,32 @@ const panelsBatteriesController = {
                     dayData[cleanDateStr] = {}; // Umesto niza sa 24 sata, koristi objekat
                 }
 
-                dayData[cleanDateStr] = entry.panelCurrentPower;
+                dayData[cleanDateStr] = {
+                    panelCurrentPower: entry.panelCurrentPower,
+                    batteryChargeLevel: entry.batteryChargeLevel,
+                    currentConsumption: entry.currentConsumption
+                };
             });
 
             const productionData = [];
+            const batteryChargeLevelData = [];
+            const consumptionData = [];
             const labels = [];
-           
+
             for (const cleanDateStr in dayData) {
                 labels.push(`${cleanDateStr}`);
-                productionData.push(dayData[cleanDateStr]);
+                productionData.push(dayData[cleanDateStr].panelCurrentPower);
+                batteryChargeLevelData.push(dayData[cleanDateStr].batteryChargeLevel);
+                consumptionData.push(dayData[cleanDateStr].currentConsumption);
             }
-            
-            const result = {labels, productionData};
+
+            // Pripremanje rezultata sa više skupova podataka
+            const result = {
+                labels,
+                productionData,       // Podaci o trenutnoj snazi panela
+                batteryChargeLevelData,          // Podaci o napunjenosti baterije
+                consumptionData       // Podaci o trenutnoj potrošnji
+            };
 
             return res.status(200).json(result);
         } 
@@ -396,7 +410,7 @@ const panelsBatteriesController = {
             let Pcurrent = await this.calculateCurrentPower(panel, weatherData);
             const Tcelija = await this.calculateCellsTemperature(weatherData.main.temp, weatherData.clouds.all);
             const fTcelija = await this.calculateFunctionOfCellsTemperature(Tcelija);
-            const currentConsumption = await this.getCurrentConsumption();
+            let currentConsumption = await this.getCurrentConsumption();
             let newChargeLevel = 0.0;
             let newBatteryState = '';
             let batteryChargedPerHour = battery.power * 1;
@@ -437,14 +451,17 @@ const panelsBatteriesController = {
                 if(battery.chargeLevel === 0) {
                     newChargeLevel = 0;
                     newBatteryState = 'inaction';
+                    currentConsumption = 0;
                 }
                 else {
                     newChargeLevel = battery.chargeLevel - batteryChargeLevelReduction;
                     newBatteryState = 'discharging';
+                    currentConsumption = batteryChargeLevelReduction;
                 }
 
                 if(newChargeLevel < 0) {
                     newChargeLevel = 0;
+                    currentConsumption = currentChargeLevel;
                 }
 
                 const updateData = { state: newBatteryState, chargeLevel: newChargeLevel };
@@ -491,6 +508,7 @@ const panelsBatteriesController = {
                 currentCellsTemperature: Tcelija,
                 currentFunctionOfCellsTemperature: fTcelija,
                 panelCurrentPower: Pcurrent,
+                currentConsumption: currentConsumption,
                 locationName: weatherData.name
             });
             
@@ -584,7 +602,7 @@ const panelsBatteriesController = {
 
                 const currentHour = weatherData.timestamp.getHours();
 
-                const currentConsumption = await this.findConsumptionDataByHourRange(currentHour);
+                let currentConsumption = await this.findConsumptionDataByHourRange(currentHour);
                 let newBatteryState = '';
                 let newChargeLevel = 0;
 
@@ -624,14 +642,17 @@ const panelsBatteriesController = {
                     if(currentChargeLevel === 0) {
                         newChargeLevel = 0;
                         newBatteryState = 'inaction';
+                        currentConsumption = 0;
                     }
                     else {
                         newChargeLevel = currentChargeLevel - batteryChargeLevelReduction;
+                        currentConsumption = batteryChargeLevelReduction;
                         newBatteryState = 'discharging';
                     }
 
                     if(newChargeLevel < 0) {
                         newChargeLevel = 0;
+                        currentConsumption = currentChargeLevel;
                     }
 
                     const updateData = { state: newBatteryState, chargeLevel: newChargeLevel };
@@ -678,6 +699,7 @@ const panelsBatteriesController = {
                     currentFunctionOfCellsTemperature: currentFofCellsTeperature,
                     panelCurrentPower: currentPanelPower,
                     timestamp: timestamp,
+                    currentConsumption: currentConsumption,
                     locationName: locationName
                 });
             }
