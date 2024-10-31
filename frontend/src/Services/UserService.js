@@ -1,7 +1,9 @@
 import axios from "axios";
 //import UserModel from "../Models/UserModel.js";
 
-const url = "http://localhost:5000";
+const url = "http://localhost:5001";
+const url2 = "http://localhost:5002";
+const url3 = "http://localhost:5003";
 
 export const logIn = async(email, password, token) => {
     try {
@@ -47,7 +49,7 @@ export const register = async (formData, token) => {
 export const getAllUsers = async(id, token) => {
 
     try {
-        const response = await axios.post(`${url}/users/getAllUsers?id=${id}`,
+        const response = await axios.post(`${url2}/users/getAllUsers?id=${id}`,
         { 
             headers: {
                 "Content-Type": "application/json",
@@ -65,7 +67,7 @@ export const getAllUsers = async(id, token) => {
 
 export const blockUser = async(id, token) => {
     try {
-        const response = await axios.post(`${url}/users/blockUser?id=${id}`,
+        const response = await axios.post(`${url2}/users/blockUser?id=${id}`,
         { 
             headers: {
                 "Content-Type": "application/json",
@@ -83,7 +85,7 @@ export const blockUser = async(id, token) => {
 
 export const unblockUser = async(id, token) => {
     try {
-        const response = await axios.post(`${url}/users/unblockUser?id=${id}`,
+        const response = await axios.post(`${url2}/users/unblockUser?id=${id}`,
         { 
             headers: {
                 "Content-Type": "application/json",
@@ -101,7 +103,7 @@ export const unblockUser = async(id, token) => {
 
 export const getLastConstParameters = async(token) => {
     try {
-        const response = await axios.get(`${url}/users/getLastConstParameters`,
+        const response = await axios.get(`${url3}/constParams/getLastConstParameters`,
             { 
                 headers: {
                     "Content-Type": "application/json",
@@ -123,7 +125,7 @@ export const setNewConstantParameters = async(formData, userId, token) => {
             userId: userId,
             ...formData
         };
-        const response = await axios.post(`${url}/users/setNewConstParameters`, JSON.stringify(dataToSend),
+        const response = await axios.post(`${url3}/constParams/setNewConstParameters`, JSON.stringify(dataToSend),
             { 
                 headers: {
                     "Content-Type": "application/json",
