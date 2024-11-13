@@ -21,10 +21,6 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
-/* app.use('/auth', authRoutes);
-app.use('/weather', weatherRoutes);
-app.use('/panels', panelRoutes);
-app.use('/users', usersRoutes); */
 
 async function connect() {
     try {

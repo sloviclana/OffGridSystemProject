@@ -2,7 +2,7 @@ import React from "react";
 import MyChart from "./MyChart";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import {getBatteryChargeLevelDataHistory, getConsumptionDataHistory, getPanelProductionDataHistory, getBatteryBySystemId } from "../Services/PanelBatteryService";
+import {getPanelProductionDataHistory, getBatteryBySystemId} from "../Services/PanelBatteryService";
 
 
 const PanelSystemOverview = () => {

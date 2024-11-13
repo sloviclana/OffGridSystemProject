@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_KEY = 'a9499caca355ee647c55a906ad8340fa';
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "http://localhost:5004";
 
 export const fetchWeatherData = async (lat, lon) => {
   const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
@@ -17,7 +17,7 @@ export const fetchWeatherData = async (lat, lon) => {
 
 export const setPanelOnLocation = async (locationData) => {
   try {
-      const response = await axios.post(`${API_BASE_URL}/weather/setPanelOnLocation`, JSON.stringify(locationData),
+      const response = await axios.post(`${API_BASE_URL}/panels/setPanelOnLocation`, JSON.stringify(locationData),
       {
         headers: {
         "Content-Type": "application/json",

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import UserModel from "../../models/User.js";
 import bcrypt from 'bcrypt';
-import ConsumptionDataModel from "../../models/ConsumptionData.js";
 
 const UserAuthService = {
     register : async(req, res) => {

@@ -20,7 +20,7 @@ app.use('/users', usersRoutes);
 connectDB(MONGODB_URI).then(() => {
   // Pokretanje servera nakon uspešnog povezivanja sa bazom
   app.listen(PORT, () => {
-    console.log(`Server radi na portu ${PORT}`);
+    console.log(`UsersService radi na portu ${PORT}`);
   });
 }).catch((error) => {
   console.log(`Greška prilikom povezivanja sa bazom: ${error}`);

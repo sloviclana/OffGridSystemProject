@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
 import UserModel from "../../models/User.js";
-import PanelModel from "../../models/Panel.js";
-import BatteryModel from "../../models/Battery.js";
-import ConstantParametersModel from "../../models/ConstantParameters.js";
 import axios from "axios";
 
 const UsersService = {
@@ -21,6 +18,22 @@ const UsersService = {
             return res.status(500).json({ message: "Error with getting info about all users! Try again.", error: err });
         }
     }, 
+
+    findUserByEmail: async(req, res) => {
+        try {
+            console.log(req.query);
+
+            const email = req.query.email;
+
+            const user = await UserModel.findOne({email: email});
+
+            return res.status(201).json(user);
+        }
+        catch(error) {
+            console.log(error);
+            return res.status(500).json({message: "An error occured while searching for an user with email: " + email});
+        }
+    },
 
     blockUser: async(req, res) => {
         try {

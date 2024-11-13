@@ -1,5 +1,7 @@
 import axios from 'axios';
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "http://localhost:5004";
+const API_BASE_URL2 = "http://localhost:5005";
+const API_BASE_URL3 = "http://localhost:5008";
 
 export const getAllPanelsForUser = async (id, token) => {
     try {
@@ -20,7 +22,7 @@ export const getAllPanelsForUser = async (id, token) => {
 
 export const getAllBatteriesForUser = async (id, token) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/panels/getAllBatteriesFromUser?id=${id}`,
+        const response = await axios.post(`${API_BASE_URL2}/batteries/getAllBatteriesFromUser?id=${id}`,
         {
           headers: {
           "Content-Type": "application/json",
@@ -76,7 +78,7 @@ export const getConsumptionDataHistory = async(token) => {
 
 export const getPanelProductionDataHistory = async(id, token, days) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/panels/getPanelProductionDataHistory?systemId=${id}&days=${days}`,
+    const response = await axios.get(`${API_BASE_URL3}/historyData/getPanelProductionDataHistory?systemId=${id}&days=${days}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +96,7 @@ export const getPanelProductionDataHistory = async(id, token, days) => {
 
 export const getBatteryChargeLevelDataHistory = async(id, token, days) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/panels/getBatteryChargeLevelDataHistory?systemId=${id}&days=${days}`,
+    const response = await axios.get(`${API_BASE_URL3}/panels/getBatteryChargeLevelDataHistory?systemId=${id}&days=${days}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +114,7 @@ export const getBatteryChargeLevelDataHistory = async(id, token, days) => {
 
 export const getBatteryBySystemId = async (systemId, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/panels/getBatteryBySystemId?systemId=${systemId}`,
+    const response = await axios.get(`${API_BASE_URL2}/batteries/getBatteryBySystemId?systemId=${systemId}`,
       {
         headers: {
           "Content-Type": "application/json",
