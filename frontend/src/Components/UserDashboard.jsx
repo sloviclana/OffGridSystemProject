@@ -13,6 +13,7 @@ const UserDashboard = () => {
     const [batteries, setBatteries] = useState([]);
     const [panelsVisible, setPanelsVisible] = useState(false);
     const [batteriesVisible, setBatteriesVisible] = useState(false);
+    let panelLocation = '';
 
     const userFromStorage = JSON.parse(sessionStorage.getItem('user'));
     const tokenFromStorage = sessionStorage.getItem('token');
@@ -30,8 +31,9 @@ const UserDashboard = () => {
     const handleShowChart = async(panelSystemId) => {
         
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, 3);
-        
         const battery = await getBatteryBySystemId(panelSystemId);
+        panelLocation = panelProductionData.locationName;
+
         const data = {
             labels: panelProductionData.labels,
             datasets: [

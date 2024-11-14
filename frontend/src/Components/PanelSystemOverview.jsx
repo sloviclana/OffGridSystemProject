@@ -2,7 +2,7 @@ import React from "react";
 import MyChart from "./MyChart";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import {getPanelProductionDataHistory, getBatteryBySystemId} from "../Services/PanelBatteryService";
+import {getPanelProductionDataHistory, getBatteryBySystemId, findNameOfLocation} from "../Services/PanelBatteryService";
 
 
 const PanelSystemOverview = () => {
@@ -14,8 +14,7 @@ const PanelSystemOverview = () => {
     const tokenFromStorage = sessionStorage.getItem('token');
     const [selectedNumber, setSelectedNumber] = useState(null);
     let panelSystemId = receivedDataFromLocation.panelSystemId;
-
-    
+    let [panelLocation, setPanelLocation] = useState('');
 
     const handleSelectChange = (event) => {
         setSelectedNumber(event.target.value); // Postavlja vrednost izabranog broja
@@ -24,6 +23,8 @@ const PanelSystemOverview = () => {
     const handleShowChart = async() => {
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, selectedNumber);
         const batteryData = await getBatteryBySystemId(panelSystemId);
+        //const location = await findNameOfLocation(panelSystemId);
+        setPanelLocation(panelProductionData.locationName);
 
         const data = {
             labels: panelProductionData.labels,

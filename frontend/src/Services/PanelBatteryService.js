@@ -128,5 +128,22 @@ export const getBatteryBySystemId = async (systemId, token) => {
     console.error("Couldn't get battery for this id!");
     throw error;
   }
-}
+};
+
+export const findNameOfLocation = async(systemId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL3}/historyData/findNameOfLocation`,
+      {
+        params : {
+          systemId: systemId
+        } 
+      }
+      );
+      return response.data;
+  }
+  catch (error) {
+    console.error("Couldn't get battery for this id!");
+    throw error;
+  }
+};
 

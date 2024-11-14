@@ -15,6 +15,7 @@ const AdminDashboard = () => {
     const [usersVisible, setUsersVisible] = useState(null);
     const [panelsByUser, setPanelsByUser] = useState({});
     const [batteriesByUser, setBatteriesByUser] = useState({});
+    const [panelLocation, setPanelLocation] = useState(null);
 
     const navigate = useNavigate();
     const userFromStorage = JSON.parse(sessionStorage.getItem('user'));
@@ -71,8 +72,10 @@ const AdminDashboard = () => {
 
     const handleShowChart = async(panelSystemId) => {
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, 3);
-        
         const battery = await getBatteryBySystemId(panelSystemId);
+        setPanelLocation(panelProductionData.locationName);
+
+
         const data = {
             labels: panelProductionData.labels,
             datasets: [
@@ -159,7 +162,7 @@ const AdminDashboard = () => {
                                                         {panelsByUser[user._id].map((panel, index) => (
                                                             <li key={panel._id}>
                                                                 <div className="dashboardDiv">
-                                                                    <h3>{panel.systemId} panel</h3>
+                                                                    <h3>{panel.systemId} in {panelLocation}, panel</h3>
                                                                     <p><strong>Location latitude:</strong>  {panel.location.coordinates[0]}</p>
                                                                     <p><strong>Location longitude:</strong> {panel.location.coordinates[1]}</p>
                                                                     <p><strong>Installed power (kW):</strong> {panel.installedPower}</p>
@@ -180,7 +183,7 @@ const AdminDashboard = () => {
                                                         {batteriesByUser[user._id].map((battery, index) => (
                                                             <li key={battery._id}>
                                                                 <div className="dashboardDiv">
-                                                                    <h3>{battery.systemId} battery</h3>
+                                                                    <h3>{battery.systemId}, battery</h3>
                                                                     <p><strong>Location latitude:</strong>  {battery.location.coordinates[0]}</p>
                                                                     <p><strong>Location longitude:</strong> {battery.location.coordinates[1]}</p>
                                                                     <p><strong>Capacity (kWh): </strong> {battery.capacity}</p>

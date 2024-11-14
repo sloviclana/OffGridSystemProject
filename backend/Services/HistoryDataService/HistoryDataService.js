@@ -195,7 +195,7 @@ const HistoryDataService = {
                 labels,
                 productionData,      
                 batteryChargeLevelData,        
-                consumptionData       
+                consumptionData    
             };
 
             return res.status(200).json(result);
@@ -334,6 +334,22 @@ const HistoryDataService = {
             
         }
 
+    },
+
+    findNameOfLocation: async(req, res) => {
+        try {
+            console.log(req.body.params);
+            const panelSystemId = req.body.params.systemId;
+
+            const recordOnTheLocation = await HistoryDataModel.findOne({systemId: panelSystemId});
+            const locationName = recordOnTheLocation.locationName;
+
+            return res.status(200).json(locationName);
+        }
+        catch (error){
+            console.error(error);
+            return res.status(500).json({message: "Could not find name of location for panel system: " + panelSystemId});
+        }
     },
 
     createNewHistoryDataRecord: async(req, res) => {

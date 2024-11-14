@@ -1,41 +1,56 @@
 // src/Components/Map.jsx
 import React, { useState } from 'react';
-import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
+
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Ovo može biti potrebno za ispravan prikaz ikona sa Leaflet-om u React okruženju
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
 
 const Map = ({ onLocationSelect }) => {
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyCFXlcRxP4FJO9df5kfiA7bs2d85yysgvM',
-  });
 
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 45.2671, lng: 19.8335 }); // Inicijalni centar mape
 
-  const handleMapClick = (event) => {
-    const { latLng } = event;
-    const lat = latLng.lat();
-    const lng = latLng.lng();
-    setSelectedLocation({ lat, lng });
-    setMapCenter(latLng); // Postavi centar mape na lokaciju markera
-    onLocationSelect({ lat, lng });
+  const LocationMarker = () => {
+    useMapEvents({
+      click(e) {
+        const { lat, lng } = e.latlng;
+
+        if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+          setSelectedLocation({ lat, lng });
+          onLocationSelect({ lng, lat }); // Pravilni redosled za MongoDB
+        } else {
+          console.error("Coordinates (lat, lng) are out of bounds.");
+        }
+
+      },
+    });
+
+    return selectedLocation ? <Marker position={selectedLocation} /> : null;
   };
 
-  return isLoaded ? (
+  return (
     <div className='mapDiv'>
-    <GoogleMap
-      onClick={handleMapClick}
-      mapContainerStyle={{ width: '100%', height: '800px' }}
-      zoom={8}
-      center={mapCenter}
-    >
-      {selectedLocation && (
-        <Marker position={selectedLocation} />
-      )}
-    </GoogleMap>
+      <MapContainer
+        center={[45.2671, 19.8335]} // Inicijalni centar mape
+        zoom={8}
+        style={{ width: '100%', height: '800px' }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+        />
+        <LocationMarker />
+      </MapContainer>
     </div>
-  ) : (
-    <div className='centralDiv'>Loading...</div>
   );
-  
+
 };
 
 export default Map;
