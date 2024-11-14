@@ -3,6 +3,8 @@ import HistoryDataModel from '../../models/HistoryData.js';
 import WeatherDataModel from "../../models/WeatherData.js";
 import axios from 'axios';
 import xlsx from 'xlsx';
+import fs from 'fs';
+import path from 'path';
 
 const API_KEY = 'a9499caca355ee647c55a906ad8340fa';
 
@@ -90,8 +92,12 @@ const HistoryDataService = {
         }
     },
 
-    generateHistoryDataReport: async function(timestamp1, timestamp2, systemid) {
+    generateHistoryDataReport: async function(req, res) {
         try {
+            const timestamp1 = new Date(req.body.params.timestamp1);
+            const timestamp2 = new Date(req.body.params.timestamp2);
+            const systemid = req.body.params.systemId;
+
             const data = await HistoryDataModel.find({systemId: systemid});
 
             const filteredData = data.filter(entry => entry.timestamp >= timestamp1 && entry.timestamp <= timestamp2);
@@ -125,15 +131,29 @@ const HistoryDataService = {
             xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
             // Sačuvaj radnu knjigu u Excel fajl
-            const excelFilePath = 'C:/Users/pc/Documents/softvEksploatacija/projekat/OffGridSystemProject/backend/report.xlsx';
+            const excelFilePath = 'C:/Users/pc/Documents/softvEksploatacija/projekat/OffGridSystemProject/backend/reports/' + systemid + 'report.xlsx';
 
-            xlsx.writeFile(workbook, excelFilePath);
+            let counter = 1;
+            let newFilePath = excelFilePath;
+
+            // Proverite da li fajl postoji
+            while (fs.existsSync(newFilePath)) {
+                // Ako postoji, dodajte brojač na kraju imena fajla
+                const extname = path.extname(excelFilePath);
+                const basename = path.basename(excelFilePath, extname);
+                newFilePath = path.join(path.dirname(excelFilePath), `${basename}_${counter}${extname}`);
+                counter++;
+            }
+
+            // Sačuvaj radnu knjigu u Excel fajl na jedinstvenoj putanji
+            xlsx.writeFile(workbook, newFilePath);
         
             console.log('XLSX fajl je uspešno sačuvan.');
+            return res.status(200).json("Your report is generated successfully in folder '/reports' on filepath: " + newFilePath);
         }
         catch(error) {
             console.error(error);
-            //return res.status(500).json({ message: "Could not generate history report for: " + systemid});
+            return res.status(500).json({ message: "Could not generate history report for: " + systemid});
         }
     },
 

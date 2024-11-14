@@ -2,8 +2,8 @@ import React from "react";
 import MyChart from "./MyChart";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import {getPanelProductionDataHistory, getBatteryBySystemId, findNameOfLocation} from "../Services/PanelBatteryService";
-
+import {getPanelProductionDataHistory, getBatteryBySystemId, generateHistoryDataReport} from "../Services/PanelBatteryService";
+import DataRangePicker from './DataRangePicker';
 
 const PanelSystemOverview = () => {
     const location = useLocation();
@@ -14,17 +14,22 @@ const PanelSystemOverview = () => {
     const tokenFromStorage = sessionStorage.getItem('token');
     const [selectedNumber, setSelectedNumber] = useState(null);
     let panelSystemId = receivedDataFromLocation.panelSystemId;
-    let [panelLocation, setPanelLocation] = useState('');
+    const [selectedRange, setSelectedRange] = useState(null);
 
     const handleSelectChange = (event) => {
         setSelectedNumber(event.target.value); // Postavlja vrednost izabranog broja
       };
 
+      const handleDateRangeSelect = async (range) => {
+        setSelectedRange(range);
+        const result = await generateHistoryDataReport(range.startDate, range.endDate, panelSystemId);
+        alert(result);
+        console.log('Izabrani interval:', range);
+      };
+
     const handleShowChart = async() => {
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, selectedNumber);
         const batteryData = await getBatteryBySystemId(panelSystemId);
-        //const location = await findNameOfLocation(panelSystemId);
-        setPanelLocation(panelProductionData.locationName);
 
         const data = {
             labels: panelProductionData.labels,
@@ -74,9 +79,18 @@ const PanelSystemOverview = () => {
                             {num}
                             </option>
                         ))}
-                </select> days ago    
+                </select> days ago   </p> 
 
                 <button type="submit" onClick={handleShowChart}>Show</button>
+                <br></br>
+                <p>You can generate history report for this panel system: 
+                <DataRangePicker onDateRangeSelect={handleDateRangeSelect} />
+                    {/* {selectedRange && (
+                        <div>
+                            <p>Start date: {selectedRange.startDate.toLocaleDateString()}</p>
+                            <p>End date: {selectedRange.endDate.toLocaleDateString()}</p>
+                        </div>
+                    )} */}
                 </p> 
                 <MyChart data={chartData} battery={battery}></MyChart>
             </div>

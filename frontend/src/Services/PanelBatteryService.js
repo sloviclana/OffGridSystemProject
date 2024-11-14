@@ -147,3 +147,24 @@ export const findNameOfLocation = async(systemId) => {
   }
 };
 
+export const generateHistoryDataReport = async(timestamp1, timestamp2, systemId) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL3}/historyData/generateHistoryDataReport`,
+      {
+        params: {
+          timestamp1: timestamp1,
+          timestamp2: timestamp2,
+          systemId: systemId
+        }
+      }
+    );
+    return response.data;
+  }
+  catch (error) {
+    console.error("Couldn't generate history report for panel system " + systemId + " !");
+    throw error;
+  }
+
+};
+
+
