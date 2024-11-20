@@ -167,4 +167,21 @@ export const generateHistoryDataReport = async(timestamp1, timestamp2, systemId)
 
 };
 
+export const getPredictions = async(panelSystemId) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL3}/historyData/getForecast`,
+      {
+        params: {
+          systemId: panelSystemId
+        }
+      }
+    );
+    return response.data;
+  }
+  catch (error) {
+    console.error("Couldn't get energy production predictions for panel system " + panelSystemId + " !");
+    throw error;
+  }
+};
+
 

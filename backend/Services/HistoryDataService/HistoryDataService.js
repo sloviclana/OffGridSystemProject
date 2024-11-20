@@ -5,6 +5,7 @@ import axios from 'axios';
 import xlsx from 'xlsx';
 import fs from 'fs';
 import path from 'path';
+import Papa from 'papaparse';
 
 const API_KEY = 'a9499caca355ee647c55a906ad8340fa';
 
@@ -384,6 +385,69 @@ const HistoryDataService = {
         catch (error) {
             console.log(error);
             return res.status(500).json({message: "An error occured with creating HistoryData record."});
+        }
+    },
+
+    getForecast: async (req, res) => {
+        try {
+
+            const systemId = req.body.params.systemId;
+
+            const panelInfo = await WeatherDataModel.findOne({systemId: systemId});
+            const LAT = panelInfo.latitude;
+            const LON = panelInfo.longitude;
+
+            const dataForPrediction = await HistoryDataModel.find(
+                {systemId: systemId},
+                { // Projekcija - samo željena polja
+                    timestamp: 1,
+                    currentOutsideTemperature: 1,
+                    currentCloudinessPercent: 1,
+                    sunset: 1,
+                    sunrise: 1,
+                    rain: 1, 
+                    panelCurrentPower: 1,    
+                    _id: 0 // Isključuje polje _id iz rezultata
+                }
+            );
+
+            const fields = ['timestamp', 'currentOutsideTemperature', 'currentCloudinessPercent', 
+                'sunset', 'sunrise', 'rain', 'panelCurrentPower'];
+
+            const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hours}:${minutes}`;
+            };
+
+             // Pripremi podatke za radni list
+            const filteredDataForExcel = dataForPrediction.map(entry => {
+                const result = {};
+                fields.forEach(field => {
+                    result[field] = field === 'timestamp' ? formatDate(new Date(entry[field])) : entry[field];
+                });
+                return result;
+            });
+
+            const csvData = Papa.unparse(filteredDataForExcel);
+
+            // Sačuvaj radnu knjigu u Excel fajl
+            const filePath = 'C:/Users/pc/Documents/softvEksploatacija/projekat/OffGridSystemProject/backend/Services/ForecastPredictionService/dataForPrediction.csv';
+
+            // Sačuvaj CSV string u fajl
+            fs.writeFileSync(filePath, csvData);
+            console.log("CSV fajl je uspešno sačuvan na putanji:", filePath);
+
+            const response = await axios.post('http://localhost:5009/predict', { LAT, LON });
+
+
+            return res.status(200).json(response.data);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({message: "An error occured with predicting energy production for panel system: ."});
         }
     }
 };

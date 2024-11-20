@@ -40,5 +40,10 @@ module.exports = {
         script: 'Services/WeatherDataService/service.js',
         watch: true
       },
+      {
+        name: 'ForecastPredictionService',
+        script: 'Services/ForecastPredictionService/app.py',
+        watch: true
+      }
     ],
   };

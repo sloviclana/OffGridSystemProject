@@ -6,7 +6,7 @@ import weatherDataRoutes from './weatherDataRoutes.js';
 import connectDB from '../db.js';
 
 const app = express();
-const PORT = 5009;
+const PORT = 5010;
 const MONGODB_URI = "mongodb+srv://sloviclana:myOffGridDB@offgridcluster.xu5ndiy.mongodb.net/weatherData-db?retryWrites=true&w=majority&appName=OffGridCluster";
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

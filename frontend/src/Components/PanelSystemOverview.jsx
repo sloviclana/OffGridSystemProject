@@ -2,8 +2,10 @@ import React from "react";
 import MyChart from "./MyChart";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import {getPanelProductionDataHistory, getBatteryBySystemId, generateHistoryDataReport} from "../Services/PanelBatteryService";
+import {getPanelProductionDataHistory, getBatteryBySystemId, generateHistoryDataReport, getPredictions} from "../Services/PanelBatteryService";
 import DataRangePicker from './DataRangePicker';
+import PowerPredictionChart from "./PowerPredictionChart";
+import { formToJSON } from "axios";
 
 const PanelSystemOverview = () => {
     const location = useLocation();
@@ -15,6 +17,9 @@ const PanelSystemOverview = () => {
     const [selectedNumber, setSelectedNumber] = useState(null);
     let panelSystemId = receivedDataFromLocation.panelSystemId;
     const [selectedRange, setSelectedRange] = useState(null);
+    const [predictions, setPredictions] = useState([]);
+    const [predictionsData, setPredictionsData] = useState(null);
+    const [isPredictionDone, setIsPredictionDone] = useState(false);
 
     const handleSelectChange = (event) => {
         setSelectedNumber(event.target.value); // Postavlja vrednost izabranog broja
@@ -27,6 +32,18 @@ const PanelSystemOverview = () => {
         console.log('Izabrani interval:', range);
       };
 
+    const handleShowPredictions = async(panelSystemId) => {
+        const result = await getPredictions(panelSystemId);
+        
+        const res = JSON.parse(result);
+        console.log('Predictions: ' + res);
+        setPredictionsData(res);
+        if(res !== null) {
+            setIsPredictionDone(true);
+        }
+      };
+    
+    
     const handleShowChart = async() => {
         const panelProductionData = await getPanelProductionDataHistory(panelSystemId, tokenFromStorage, selectedNumber);
         const batteryData = await getBatteryBySystemId(panelSystemId);
@@ -69,29 +86,56 @@ const PanelSystemOverview = () => {
         <div className="centralDiv">
             <div className="myChartDiv">
                 <h1>Panel System Energy Overview for system: {panelSystemId}</h1>
-                <p>Show for  
-                    <select value={selectedNumber} onChange={handleSelectChange}>
-                        <option disabled value={3}>
-                            Choose number of days (default: 3)
-                        </option>
-                        {numbers.map((num) => (
-                            <option key={num} value={num}>
-                            {num}
-                            </option>
-                        ))}
-                </select> days ago   </p> 
-
-                <button type="submit" onClick={handleShowChart}>Show</button>
-                <br></br>
-                <p>You can generate history report for this panel system: 
-                <DataRangePicker onDateRangeSelect={handleDateRangeSelect} />
-                    {/* {selectedRange && (
-                        <div>
-                            <p>Start date: {selectedRange.startDate.toLocaleDateString()}</p>
-                            <p>End date: {selectedRange.endDate.toLocaleDateString()}</p>
+                <div className="container">
+                    <div className="leftColumn">
+                        <div className="numberOfDaysForChartDiv">
+                        <h3>Pick the starting day for the chart</h3>
+                        <p>
+                            Show for  
+                            <input 
+                            type="number" 
+                            value={selectedNumber} 
+                            onChange={handleSelectChange} 
+                            placeholder="Choose number of days"
+                            />
+                            days ago
+                        </p>
+                        <button 
+                            type="submit" 
+                            onClick={handleShowChart}
+                            disabled={!selectedNumber || selectedNumber <= 0}
+                        >
+                            Show
+                        </button>
                         </div>
-                    )} */}
-                </p> 
+
+                        <div className="dateRangePickerDiv">
+                        <p>
+                            You can generate history report for this panel system: 
+                            <DataRangePicker onDateRangeSelect={handleDateRangeSelect} />
+                        </p> 
+                        </div>
+                    </div>
+
+                    <div className="rightColumn">
+                        <div className="predictionDiv">
+                        <p>
+                            You can see predictions for this panel system energy production
+                            <button onClick={() => handleShowPredictions(panelSystemId)}>
+                            Show predictions
+                            </button>
+
+                            {isPredictionDone ? (
+                            <div>
+                                <PowerPredictionChart chartData={predictionsData} />
+                            </div>
+                            ) : (
+                            <p></p>
+                            )}
+                        </p>
+                        </div>
+                    </div>
+                    </div>
                 <MyChart data={chartData} battery={battery}></MyChart>
             </div>
         </div>

@@ -186,7 +186,37 @@ body {
   width: 100%;
 }
 
+.container {
+  display: flex;           /* Postavlja div-ove u red */
+  justify-content: space-evenly; /* Razmak između div-ova */
+  align-items: center;     /* Vertikalno poravnavanje */
+  width: 100%;
+}
 
+.leftColumn {
+  display: flex;
+  flex-direction: column; /* Postavlja elemente jedan ispod drugog */
+  width: 30%; /* Širina leve kolone */
+}
+
+.rightColumn {
+  width: 65%; /* Širina desne kolone */
+}
+
+.numberOfDaysForChartDiv,
+.dateRangePickerDiv {
+  margin-bottom: 20px; /* Razmak između elemenata u levoj koloni */
+  border: #0e5521 solid 2px;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.predictionDiv {
+  background-color: #f9f9f9; /* Pozadinska boja za preglednost */
+  padding: 20px;
+  border-radius: 10px;
+  border: #0e5521 solid 2px;
+}
 .mapDiv {
   flex: 65%;
   min-height: 95vh;
@@ -248,12 +278,13 @@ body {
   background-position: right;
   justify-content: flex;
   position:relative;
-  width: 1000px;
-  height: 800px;
+  
   z-index: 1;
   padding: 20px; /* Bez navodnika */
   border: 2px solid white;
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .homepageContent {

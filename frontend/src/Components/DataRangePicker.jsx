@@ -60,7 +60,7 @@ const DateRangePicker = ({ onDateRangeSelect }) => {
       </div>
 
       {/* Dugme za potvrdu */}
-      <button onClick={handleSubmit}>Potvrdi</button>
+      <button onClick={handleSubmit}>Submit</button>
     </div>
   );
 };

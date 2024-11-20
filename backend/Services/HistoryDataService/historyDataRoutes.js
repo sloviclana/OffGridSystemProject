@@ -10,5 +10,6 @@ router.post('/generateHistoryDataReport', HistoryDataService.generateHistoryData
 router.post('/updateWeatherDataForAllSystems', HistoryDataService.updateWeatherDataForAllSystems);
 router.get('/getAllWeatherData', HistoryDataService.getAllWeatherData);
 router.get('/findNameOfLocation', HistoryDataService.findNameOfLocation);
+router.post('/getForecast', HistoryDataService.getForecast);
 
 export default router; 
