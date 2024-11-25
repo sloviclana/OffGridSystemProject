@@ -441,7 +441,7 @@ const HistoryDataService = {
             fs.writeFileSync(filePath, csvData);
             console.log("CSV fajl je uspešno sačuvan na putanji:", filePath);
 
-            const response = await axios.post('http://localhost:5009/predict', { LAT, LON });
+            const response = await axios.post('http://127.0.0.1:5009/predict', { LAT, LON });
 
 
             return res.status(200).json(response.data);
